@@ -1,18 +1,7 @@
 export const RELAY_PORT = parseInt(process.env.RELAY_PORT || "3001", 10)
 
-// In-browser: derive WebSocket URL from current origin (same host, proxy handles routing)
-// Server/SDK: use env var or default to localhost
-export const RELAY_URL =
-  typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_RELAY_URL ||
-        `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`)
-    : (process.env.NEXT_PUBLIC_RELAY_URL || `ws://localhost:${RELAY_PORT}`)
-
-// HTTP API base URL for relay (rooms, health)
-export const RELAY_HTTP_URL =
-  typeof window !== "undefined"
-    ? `${window.location.origin}`
-    : `http://localhost:${RELAY_PORT}`
+// Base relay URL for server-side / SDK usage
+export const RELAY_URL = process.env.NEXT_PUBLIC_RELAY_URL || `ws://localhost:${RELAY_PORT}`
 export const DEFAULT_ROOM_TTL = 3600
 export const MAX_ROOM_TTL = 86400
 export const ROOM_CODE_LENGTH = 12

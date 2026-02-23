@@ -6,7 +6,21 @@ import {
   generatePeerId,
   openEnvelope,
 } from "@/lib/crypto"
-import { RELAY_URL, MAX_CLIENT_MESSAGES } from "@/lib/constants"
+import { RELAY_URL as BASE_RELAY_URL, MAX_CLIENT_MESSAGES } from "@/lib/constants"
+
+// In-browser: derive WebSocket URL from current origin (proxy handles WS upgrade)
+// Falls back to env var or localhost for SSR/SDK
+function getRelayUrl(): string {
+  if (typeof window !== "undefined") {
+    return (
+      process.env.NEXT_PUBLIC_RELAY_URL ||
+      `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`
+    )
+  }
+  return BASE_RELAY_URL
+}
+
+const RELAY_URL = getRelayUrl()
 
 export interface ChatMessage {
   id: string
