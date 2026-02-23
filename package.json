@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && npm run relay:build",
+    "start": "node proxy.mjs",
     "lint": "eslint",
     "relay": "tsx relay/server.ts",
     "relay:build": "tsc -p relay/tsconfig.json",

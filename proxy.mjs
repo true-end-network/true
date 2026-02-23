@@ -16,7 +16,8 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const PORT = parseInt(process.env.PORT || '8080')
-const NEXT_PORT = 3000
+// Internal ports — must not conflict with the external PORT
+const NEXT_PORT = PORT === 3000 ? 3002 : 3000
 const RELAY_PORT = parseInt(process.env.RELAY_PORT || '3001')
 
 console.log(`[true] Starting True services...`)
