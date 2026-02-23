@@ -34,3 +34,20 @@ ENV PORT=3000
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
   CMD wget -q --spider http://localhost:3000/ || exit 1
 CMD ["node", "server.js"]
+
+FROM base AS combined
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/relay/dist ./relay/dist
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+COPY package.json start.sh ./
+RUN chmod +x start.sh
+USER appuser
+EXPOSE 3000 3001
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+ENV RELAY_PORT=3001
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -q --spider http://localhost:3000/ || exit 1
+CMD ["sh", "start.sh"]
