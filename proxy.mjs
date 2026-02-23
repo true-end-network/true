@@ -16,9 +16,15 @@ import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const PORT = parseInt(process.env.PORT || '8080')
-// Internal ports — must not conflict with the external PORT
-const NEXT_PORT = PORT === 3000 ? 3002 : 3000
-const RELAY_PORT = parseInt(process.env.RELAY_PORT || '3001')
+
+// Internal ports — must not conflict with the external PORT or each other
+let NEXT_PORT = 3000
+let RELAY_PORT = parseInt(process.env.RELAY_PORT || '4001')
+
+// Resolve conflicts: Railway may assign PORT that collides with internal ports
+if (NEXT_PORT === PORT) NEXT_PORT = 3002
+if (RELAY_PORT === PORT) RELAY_PORT = PORT === 4001 ? 4002 : 4001
+if (RELAY_PORT === NEXT_PORT) RELAY_PORT = NEXT_PORT + 1
 
 console.log(`[true] Starting True services...`)
 console.log(`[true] External port: ${PORT} | Next.js: ${NEXT_PORT} | Relay: ${RELAY_PORT}`)

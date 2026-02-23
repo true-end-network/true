@@ -46,7 +46,7 @@ RUN chmod +x start.sh
 USER appuser
 EXPOSE 3000
 ENV HOSTNAME=0.0.0.0
-ENV RELAY_PORT=3001
+ENV RELAY_PORT=4001
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=20s \
   CMD wget -q --spider http://localhost:${PORT:-3000}/ || exit 1
 CMD ["node", "proxy.mjs"]
