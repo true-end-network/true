@@ -10,7 +10,8 @@
     "relay": "tsx relay/server.ts",
     "relay:build": "tsc -p relay/tsconfig.json",
     "relay:start": "node relay/dist/relay/server.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run relay\""
+    "dev:all": "concurrently \"npm run dev\" \"npm run relay\"",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
@@ -31,6 +32,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

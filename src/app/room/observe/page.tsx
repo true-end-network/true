@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ChatObserver } from "@/components/chat-observer"
 import { RoomInfo } from "@/components/room-info"
+import { RoomControls } from "@/components/room-controls"
 import { useChatStore } from "@/stores/chat-store"
 import { decodeRoomFragment } from "@/lib/crypto"
 import { ArrowLeft, Shield, Loader2 } from "lucide-react"
@@ -86,6 +87,7 @@ export default function ObserveRoomPage() {
       </header>
 
       <RoomInfo />
+      <RoomControls />
 
       {error && (
         <div className="mx-4 mt-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-xs text-destructive">

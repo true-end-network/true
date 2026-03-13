@@ -82,12 +82,67 @@ export interface PongResponse {
   event: "pong"
 }
 
+// Room control events
+export interface LockRoomPayload {
+  event: "lock_room"
+  roomHash: string
+  deleteToken: string
+}
+
+export interface UnlockRoomPayload {
+  event: "unlock_room"
+  roomHash: string
+  deleteToken: string
+}
+
+export interface UpdateTtlPayload {
+  event: "update_ttl"
+  roomHash: string
+  deleteToken: string
+  ttl: number
+}
+
+export interface KickPeerPayload {
+  event: "kick_peer"
+  roomHash: string
+  deleteToken: string
+  peerId: string
+}
+
+export interface RoomLockedEvent {
+  event: "room_locked"
+  roomHash: string
+}
+
+export interface RoomUnlockedEvent {
+  event: "room_unlocked"
+  roomHash: string
+}
+
+export interface TtlUpdatedEvent {
+  event: "ttl_updated"
+  roomHash: string
+  ttl: number
+  expiresAt: number
+}
+
+export interface PeerKickedEvent {
+  event: "peer_kicked"
+  roomHash: string
+  peerId: string
+  peerCount: number
+}
+
 export type ServerEvent =
   | RoomCreatedResponse
   | RoomJoinedResponse
   | PeerEvent
   | RoomExpiredEvent
   | RoomDeletedEvent
+  | RoomLockedEvent
+  | RoomUnlockedEvent
+  | TtlUpdatedEvent
+  | PeerKickedEvent
   | ErrorResponse
   | MessagePayload
   | PongResponse
@@ -97,5 +152,9 @@ export type ClientEvent =
   | JoinRoomPayload
   | LeaveRoomPayload
   | DeleteRoomPayload
+  | LockRoomPayload
+  | UnlockRoomPayload
+  | UpdateTtlPayload
+  | KickPeerPayload
   | MessagePayload
   | { event: "ping" }

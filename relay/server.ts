@@ -47,6 +47,7 @@ interface Room {
   deleteToken: string
   createdAt: number
   ttl: number
+  locked: boolean
 }
 
 interface RateWindow {
@@ -213,6 +214,7 @@ function handleCreateRoom(ws: WebSocket, data: { ttl: number; roomHash: string }
     deleteToken,
     createdAt: Date.now(),
     ttl: clampedTtl * 1000,
+    locked: false,
   }
 
   room.peers.set(peerId, { ws, id: peerId, alive: true })
@@ -234,6 +236,11 @@ function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
 
   if (!room) {
     send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR", roomHash })
+    return
+  }
+
+  if (room.locked) {
+    send(ws, { event: "error", message: "Room is locked", code: "ROOM_LOCKED", roomHash })
     return
   }
 
@@ -353,6 +360,95 @@ function handleMessage(ws: WebSocket, data: { envelope: unknown }, ip: string) {
       send(peer.ws, messageData)
     }
   }
+}
+
+function handleLockRoom(ws: WebSocket, data: { roomHash: string; deleteToken: string }) {
+  const { roomHash, deleteToken } = data
+  const room = rooms.get(roomHash)
+
+  if (!room) {
+    send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+  if (!deleteToken || room.deleteToken !== deleteToken) {
+    send(ws, { event: "error", message: "Invalid delete token", code: "INVALID_DELETE_TOKEN" })
+    return
+  }
+
+  room.locked = true
+  broadcast(room, { event: "room_locked", roomHash })
+}
+
+function handleUnlockRoom(ws: WebSocket, data: { roomHash: string; deleteToken: string }) {
+  const { roomHash, deleteToken } = data
+  const room = rooms.get(roomHash)
+
+  if (!room) {
+    send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+  if (!deleteToken || room.deleteToken !== deleteToken) {
+    send(ws, { event: "error", message: "Invalid delete token", code: "INVALID_DELETE_TOKEN" })
+    return
+  }
+
+  room.locked = false
+  broadcast(room, { event: "room_unlocked", roomHash })
+}
+
+function handleUpdateTtl(ws: WebSocket, data: { roomHash: string; deleteToken: string; ttl: number }) {
+  const { roomHash, deleteToken, ttl } = data
+  const room = rooms.get(roomHash)
+
+  if (!room) {
+    send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+  if (!deleteToken || room.deleteToken !== deleteToken) {
+    send(ws, { event: "error", message: "Invalid delete token", code: "INVALID_DELETE_TOKEN" })
+    return
+  }
+
+  const clampedTtl = Math.min(Math.max(ttl, 60), MAX_ROOM_TTL)
+  room.createdAt = Date.now()
+  room.ttl = clampedTtl * 1000
+  const expiresAt = room.createdAt + room.ttl
+
+  broadcast(room, { event: "ttl_updated", roomHash, ttl: clampedTtl, expiresAt })
+}
+
+function handleKickPeer(ws: WebSocket, data: { roomHash: string; deleteToken: string; peerId: string }) {
+  const { roomHash, deleteToken, peerId } = data
+  const room = rooms.get(roomHash)
+
+  if (!room) {
+    send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+  if (!deleteToken || room.deleteToken !== deleteToken) {
+    send(ws, { event: "error", message: "Invalid delete token", code: "INVALID_DELETE_TOKEN" })
+    return
+  }
+
+  const peer = room.peers.get(peerId)
+  if (peer) {
+    send(peer.ws, { event: "peer_kicked", roomHash, peerId, peerCount: totalPeerCount(room) - 1 })
+    room.peers.delete(peerId)
+    untrackWsRoom(peer.ws, roomHash)
+    peer.ws.close(1000, "Kicked from room")
+  } else if (room.httpPeers.has(peerId)) {
+    room.httpPeers.delete(peerId)
+  } else {
+    send(ws, { event: "error", message: "Peer not found", code: "ROOM_ERROR" })
+    return
+  }
+
+  broadcast(room, {
+    event: "peer_left",
+    roomHash,
+    peerId,
+    peerCount: totalPeerCount(room),
+  })
 }
 
 function cleanupExpiredRooms() {
@@ -537,6 +633,7 @@ async function handleHttpCreateRoom(req: IncomingMessage, res: ServerResponse, i
       deleteToken,
       createdAt: Date.now(),
       ttl: clampedTtl * 1000,
+      locked: false,
     }
 
     rooms.set(roomHash, room)
@@ -558,6 +655,11 @@ function handleHttpJoinRoom(res: ServerResponse, roomHash: string, ip: string) {
 
   if (!room) {
     jsonResponse(res, 404, { error: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+
+  if (room.locked) {
+    jsonResponse(res, 403, { error: "Room is locked", code: "ROOM_LOCKED" })
     return
   }
 
@@ -748,6 +850,18 @@ wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
           break
         case "message":
           handleMessage(ws, data, clientIp)
+          break
+        case "lock_room":
+          handleLockRoom(ws, data as { roomHash: string; deleteToken: string })
+          break
+        case "unlock_room":
+          handleUnlockRoom(ws, data as { roomHash: string; deleteToken: string })
+          break
+        case "update_ttl":
+          handleUpdateTtl(ws, data as { roomHash: string; deleteToken: string; ttl: number })
+          break
+        case "kick_peer":
+          handleKickPeer(ws, data as { roomHash: string; deleteToken: string; peerId: string })
           break
         case "ping":
           send(ws, { event: "pong" })

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { RoomCreator } from "@/components/room-creator"
 import { RoomJoiner } from "@/components/room-joiner"
 import { Separator } from "@/components/ui/separator"
-import { Shield, Eye, Lock, Zap, Bot, ExternalLink } from "lucide-react"
+import { Shield, Eye, Lock, Zap, Bot, ExternalLink, Users } from "lucide-react"
 import { encodeBase64, decodeUTF8 } from "tweetnacl-util"
 
 export default function HomePage() {
@@ -56,11 +56,27 @@ export default function HomePage() {
         </div>
 
         <a
-          href="/skill"
+          href="/contacts"
           className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4 transition-colors hover:bg-primary/10"
         >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10">
-            <Bot className="h-5 w-5 text-primary" />
+            <Users className="h-5 w-5 text-primary" />
+          </div>
+          <div className="flex flex-1 flex-col gap-0.5">
+            <span className="text-sm font-medium">Contacts</span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              Pair with people, start private agent conversations
+            </span>
+          </div>
+          <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        </a>
+
+        <a
+          href="/skill"
+          className="flex items-center gap-3 rounded-lg border border-border/50 p-4 transition-colors hover:bg-muted/50"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted">
+            <Bot className="h-5 w-5 text-muted-foreground" />
           </div>
           <div className="flex flex-1 flex-col gap-0.5">
             <span className="text-sm font-medium">Agent Skill</span>

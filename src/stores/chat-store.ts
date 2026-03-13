@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import type { Message, MessagePayload, ServerEvent, RoomJoinedResponse } from "@/lib/protocol"
+import type { Message, MessagePayload, ServerEvent, RoomJoinedResponse, TtlUpdatedEvent } from "@/lib/protocol"
 import {
   deriveRoomKey,
   deriveRoomHash,
@@ -40,10 +40,20 @@ interface ChatStore {
   peerCount: number
   error: string | null
   roomCodePreview: string | null
+  deleteToken: string | null
+  roomLocked: boolean
+  roomExpiresAt: number | null
+  peers: string[]
+  kicked: boolean
 
   connect: (roomCode: string) => void
   disconnect: () => void
   clearError: () => void
+  lockRoom: () => void
+  unlockRoom: () => void
+  updateTtl: (newTtlSeconds: number) => void
+  kickPeer: (peerId: string) => void
+  killRoom: () => void
 }
 
 let ws: WebSocket | null = null
@@ -72,6 +82,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   peerCount: 0,
   error: null,
   roomCodePreview: null,
+  deleteToken: null,
+  roomLocked: false,
+  roomExpiresAt: null,
+  peers: [],
+  kicked: false,
 
   connect: (roomCode: string) => {
     if (ws) {
@@ -112,7 +127,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
         switch (data.event) {
           case "room_created":
-            set({ peerCount: 1 })
+            set({ peerCount: 1, deleteToken: (data as { deleteToken: string }).deleteToken })
             break
           case "room_joined":
             set({ peerCount: (data as RoomJoinedResponse).peerCount })
@@ -143,10 +158,41 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             break
           }
           case "peer_joined":
-            set({ peerCount: data.peerCount })
+            set((s) => ({
+              peerCount: data.peerCount,
+              peers: [...s.peers, data.peerId],
+            }))
             break
           case "peer_left":
-            set({ peerCount: data.peerCount })
+            set((s) => ({
+              peerCount: data.peerCount,
+              peers: s.peers.filter((p) => p !== data.peerId),
+            }))
+            break
+          case "room_locked":
+            set({ roomLocked: true })
+            break
+          case "room_unlocked":
+            set({ roomLocked: false })
+            break
+          case "ttl_updated": {
+            const ttlData = data as TtlUpdatedEvent
+            set({ roomExpiresAt: ttlData.expiresAt })
+            break
+          }
+          case "peer_kicked":
+            if ((data as { peerId: string }).peerId === state.peerId) {
+              currentRoomCode = null
+              set({
+                connectionState: "disconnected",
+                roomHash: null,
+                roomKey: null,
+                error: "You were kicked from the room",
+                kicked: true,
+              })
+              ws?.close()
+              ws = null
+            }
             break
           case "room_expired":
             currentRoomCode = null
@@ -219,10 +265,50 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       messages: [],
       error: null,
       roomCodePreview: null,
+      deleteToken: null,
+      roomLocked: false,
+      roomExpiresAt: null,
+      peers: [],
+      kicked: false,
     })
   },
 
   clearError: () => set({ error: null }),
+
+  lockRoom: () => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "lock_room", roomHash: state.roomHash, deleteToken: state.deleteToken }))
+    }
+  },
+
+  unlockRoom: () => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "unlock_room", roomHash: state.roomHash, deleteToken: state.deleteToken }))
+    }
+  },
+
+  updateTtl: (newTtlSeconds: number) => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "update_ttl", roomHash: state.roomHash, deleteToken: state.deleteToken, ttl: newTtlSeconds }))
+    }
+  },
+
+  kickPeer: (peerId: string) => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "kick_peer", roomHash: state.roomHash, deleteToken: state.deleteToken, peerId }))
+    }
+  },
+
+  killRoom: () => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "delete_room", roomHash: state.roomHash, deleteToken: state.deleteToken }))
+    }
+  },
 }))
 
 function attemptReconnect() {
