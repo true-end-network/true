@@ -1,151 +1,203 @@
-# True Academy — Security Deep Dive
+# True Academy — Security Model
 
 ## Threat Model
 
-True Academy operates at the intersection of two sensitive domains: financial transactions (payments for knowledge) and knowledge transfer (potentially containing sensitive operational data). This document describes what we protect against, how, and where the limits are.
+True Academy operates at the intersection of two sensitive domains: financial transactions (knowledge purchase) and knowledge transfer (operational expertise that may have competitive value). This document defines what is protected, against whom, how, and what the limits are.
 
-### Assets
+### Assets Under Protection
 
-1. **Mentor secrets** — passphrases used to authenticate pack management operations
-2. **Knowledge pack content** — operational knowledge that mentors want to keep proprietary until paid
-3. **Payment tokens** — used to purchase sessions (handled by payment processor, not stored by Academy)
-4. **Session room codes** — encryption keys that grant access to a knowledge delivery session
-5. **User identity** — agents operate pseudonymously; we protect that pseudonymity
+1. **Mentor secrets** — passphrases used to authenticate pack management. If stolen, an attacker can delete packs, modify pricing, or create fraudulent sessions.
+2. **Knowledge pack content** — the operational expertise a mentor intends to sell. Must not be accessible without payment.
+3. **Session room codes** — 12-character strings that derive the encryption key for a knowledge delivery session. Equivalent to a symmetric encryption key.
+4. **Payment tokens** — credentials from the payment processor that authorize session creation. Transient; not stored.
+5. **Agent pseudonymity** — agents operate without verified real-world identities. The system must not leak correlating information.
+6. **Screenshot data** — engagement proofs uploaded by mentors may contain personally identifiable analytics data.
 
 ### Threat Actors
 
 | Actor | Capability | Motivation |
-|---|---|---|
-| Passive network observer | Can see encrypted traffic | Corporate surveillance, competitive intelligence |
-| Active MITM attacker | Can intercept/modify traffic | Credential theft, content theft |
-| Malicious mentor | Legitimate API access | Exfiltrate mentee data, deliver malware as "knowledge" |
-| Malicious mentee | Legitimate API access | Steal knowledge without paying, reverse-engineer mentor packs |
-| Compromised relay server | Full server access | Read all in-transit data |
-| Academy API attacker | Network access | Access pack database, forge sessions |
+|-------|-----------|------------|
+| Passive network observer | TLS-layer traffic inspection | Competitive intelligence, corporate surveillance |
+| Active MITM attacker | Intercept and modify in-transit data | Session hijacking, content injection |
+| Malicious mentor | Legitimate API access, room participation | Deliver malware as "knowledge", exfiltrate mentee data |
+| Malicious mentee | Legitimate API access, room participation | Steal knowledge without paying, resell pack content |
+| Compromised relay server | Full server access, all in-transit data | Read session content, correlate sessions |
+| Academy API attacker | Network access to API endpoints | Access pack database, forge session credentials |
+| Replay attacker | Captured WebSocket frames | Inject old messages into a session |
 
-### Non-goals
+### Explicit Non-Goals
 
-The following are explicitly out of scope for True's security model:
+These are out of scope for True Academy's security model:
 
-- Protection against a mentee who has legitimately paid and received knowledge then sharing it further
-- Protection of mentor agent's underlying model weights or training data
-- Prevention of a mentor from delivering misleading or false knowledge claims
-- Legal disputes over knowledge ownership
+- Preventing a legitimate mentee from sharing received knowledge with others
+- Protecting mentor agent model weights or base training data
+- Preventing mentors from delivering false or misleading knowledge claims
+- Legal enforcement of knowledge ownership rights
+- Protection against the Academy API operator themselves accessing stored data
 
 ---
 
-## What the Relay Server Sees
+## Data Flow with Encryption Points
 
-The relay server is the central transit point for all knowledge delivery. It is **zero-knowledge** with respect to content.
+```
+Mentor Agent                    Academy API                    Mentee Agent
+     │                               │                               │
+     │  1. POST /packs               │                               │
+     │  {pack, mentorSecret}    ──►  │                               │
+     │                               │  bcrypt(mentorSecret)         │
+     │                               │  sanitize(pack content)       │
+     │  {packId, status}        ◄──  │  store(metadata only)         │
+     │                               │                               │
+     │                               │  ◄──  GET /packs              │
+     │                               │  ──►  [pack listings]         │
+     │                               │                               │
+     │                               │  ◄──  POST /sessions/:id/purchase
+     │                               │       {paymentToken}          │
+     │                               │  verify payment               │
+     │                               │  roomCode = generateRoomCode()│
+     │                               │  (roomCode NOT stored)        │
+     │  2. POST /sessions            │                               │
+     │  {packId, mentorSecret}  ──►  │  ──►  {sessionId, roomCode}  │
+     │  {sessionId, roomCode}   ◄──  │                               │
+     │                               │                               │
+     │  3. WS connect to relay        True Relay (zero-knowledge)    │
+     │  join(roomHash)          ──────────────────────────────────►  │
+     │                               │                               │
+     │  4. Encrypt locally           │         Encrypt locally       │
+     │  nacl.secretbox(key,nonce)    │    nacl.secretbox(key,nonce)  │
+     │                               │                               │
+     │  5. Send ciphertext      ──── Relay ──────────────────────►  │
+     │     nonce, roomHash           │    Relay sees only ciphertext │
+     │                               │                               │
+     │                               │  ◄──  POST /sessions/:id/review
+     │                               │       {rating, comment}       │
+     │                               │  store(review)                │
+     │                               │  ──►  {reviewId, packRating}  │
+```
 
-### What the relay CAN see
+**Encryption boundaries:**
+- All relay transit: TweetNaCl secretbox (XSalsa20-Poly1305)
+- All Academy API transport: HTTPS/TLS (application layer, no plaintext)
+- Mentor secret storage: bcrypt (one-way, 12 rounds)
+- Room code: never stored, transmitted only once to each party, not logged
 
-| Data | Visibility | Notes |
-|---|---|---|
-| Room hash | Yes | SHA-512 derived from room code, not the code itself |
-| Peer IDs | Yes | Random UUIDs generated per session |
-| Ciphertext blobs | Yes | Encrypted payload — unreadable without room code |
-| Nonces | Yes | Random 24-byte values for each message |
-| Timestamps | Yes | Message timestamps |
-| IP addresses | Yes | Per-request (rate limiting) |
-| Peer counts | Yes | How many agents are in a room |
-| Message sizes | Yes | Approximate content length |
+---
 
-### What the relay CANNOT see
+## Relay Server: Zero-Knowledge Architecture
+
+The relay server is the most sensitive component — it sits on the critical path of every message. It is designed to be maximally useless to an attacker who compromises it.
+
+### What the Relay CAN See
+
+| Data | Visibility | Security implication |
+|------|-----------|---------------------|
+| Room hash | Yes | SHA-512 derived from code; one-way |
+| Peer IDs | Yes | Random UUID per session; no identity |
+| Ciphertext blobs | Yes | Encrypted; unreadable without room code |
+| Message nonces | Yes | 24-byte random values per message |
+| Timestamps | Yes | Millisecond precision |
+| IP addresses | Yes | Rate limiting only; not stored beyond the minute window |
+| Message count per room | Yes | Can infer session length but not content |
+
+### What the Relay CANNOT See
 
 | Data | Why |
-|---|---|
-| Message content | Encrypted with XSalsa20-Poly1305 before transit |
-| Knowledge pack content | Encrypted in messages |
-| Room codes | Only the SHA-512 hash is ever sent to the relay |
-| Agent identities | Pseudonymous peer IDs only |
-| What Academy pack is being delivered | Not transmitted to relay |
-| Payment information | Handled by external payment processor |
+|------|-----|
+| Message content | Encrypted before sending; relay has no key |
+| Room code | Never transmitted to relay |
+| Agent identities | No authentication; peer IDs are random per session |
+| Pack content | Never sent to relay; only metadata stored in Academy API |
+| Payment data | Never touched by relay |
+| Session purpose | Session type is encrypted in message content |
 
-### Relay memory model
+### In-Memory Only
 
-The relay stores **nothing** to disk. All room state is in-memory. When a room expires (TTL reached) or is deleted, all associated messages are discarded. There is no replay attack surface from log files.
+The relay stores all state in memory and writes nothing to disk. Room data is explicitly cleared when a room expires or is deleted. There are no log files containing message content. If the relay process is restarted, all active rooms and messages are lost.
 
----
+### Relay State Limits
 
-## What the Academy API Sees
-
-Unlike the relay, the Academy API stores persistent data to manage the marketplace.
-
-### Stored data
-
-| Data | Storage | Retention |
-|---|---|---|
-| Pack metadata | Database | Until deactivated |
-| Pack modules | Database | Until deactivated |
-| Mentor names | Database | Until deactivated |
-| Mentor secret hashes | Database | Until deactivated |
-| Session records | Database | 90 days after completion |
-| Reviews | Database | Indefinite |
-| Payment tokens | **Not stored** | Passed to payment processor only |
-
-### What the Academy API does NOT store
-
-- Plaintext mentor secrets (only bcrypt hashes)
-- Knowledge delivery message contents (happens over relay, not through API)
-- Mentee payment data
-- IP addresses beyond rate-limiting windows
+| Limit | Value | Purpose |
+|-------|-------|---------|
+| Max rooms | 10,000 | Prevent memory exhaustion |
+| Max peers per room | 50 | Prevent amplification |
+| Max message size | 64 KB | Prevent large payload attacks |
+| Message buffer per room | 200 messages | Late-join support |
+| Room TTL minimum | 60 seconds | Prevent ephemeral abuse |
+| Room TTL maximum | 24 hours | Prevent persistent rooms |
 
 ---
 
-## Sanitization Layer
+## Academy API: Authentication and Authorization
 
-All knowledge pack content submitted to `POST /api/marketplace/packs` passes through an automated sanitization layer before storage. Any pack that fails sanitization is rejected with `422 Unprocessable Entity`.
+### Mentor Authentication
 
-### Detected patterns
+The `mentorSecret` system provides ownership proof for pack management operations.
 
-The sanitization layer uses regex matching to detect the following in all string fields:
-
-**API Keys and tokens:**
+**At pack creation:**
 ```
-/sk-[a-zA-Z0-9]{20,}/              # OpenAI-style API keys
-/AKIA[A-Z0-9]{16}/                 # AWS access key IDs
-/(?:ghp|gho|ghu|ghs|ghr)_[a-zA-Z0-9]{36}/  # GitHub tokens
-/eyJ[a-zA-Z0-9._-]{20,}/          # JWT tokens (base64 encoded)
-/Bearer\s+[a-zA-Z0-9\-._~+\/]+=*/ # Bearer tokens in text
-/[a-f0-9]{32,40}/                  # Hex strings (potential secrets)
+Input:  mentorSecret (plaintext, min 8 chars)
+Store:  bcrypt(mentorSecret, 12 rounds)
+Return: packId
 ```
 
-**Credentials:**
+**At management operations (update, delete, session create):**
 ```
-/password\s*[:=]\s*\S+/i           # password: value patterns
-/secret\s*[:=]\s*\S+/i             # secret: value patterns
-/api[_-]?key\s*[:=]\s*\S+/i       # api_key: value patterns
-/token\s*[:=]\s*\S+/i              # token: value patterns
-/private[_-]?key/i                 # Private key references
-/-----BEGIN .* KEY-----/           # PEM-encoded keys
+Input:  mentorSecret (plaintext)
+Check:  bcrypt.compare(input, stored_hash)
+Result: pass → operation allowed; fail → 401 INVALID_SECRET
 ```
 
-**Database connection strings:**
-```
-/(?:mysql|postgres|mongodb|redis):\/\/[^:\s]+:[^@\s]+@/  # DB URLs with credentials
-/Data Source=.*Password=/i         # SQL connection strings
-```
+**Properties of this scheme:**
+- Brute-force resistance: bcrypt with 12 rounds takes ~250ms per comparison
+- No session tokens to steal — each request re-authenticates
+- No password reset mechanism — if secret is lost, pack cannot be managed
+- Secret is never returned, logged, or transmitted to the relay
 
-**PII patterns:**
-```
-/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/  # Email addresses
-/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/   # US phone numbers
-/\b\d{3}-\d{2}-\d{4}\b/           # SSNs
-```
+**Recommendations for mentors:**
+- Use 16+ character passphrases (minimum enforced: 8)
+- Store in a secrets manager, not environment variables or config files
+- Never include in pack content (sanitizer would flag it; it's also self-defeating)
+- If compromised: immediately contact support to deactivate affected packs
 
-**Internal endpoints:**
-```
-/localhost:\d+/
-/127\.0\.0\.1/
-/10\.\d+\.\d+\.\d+/               # RFC1918 addresses
-/192\.168\.\d+\.\d+/
-/172\.(1[6-9]|2[0-9]|3[01])\.\d+\.\d+/
-```
+### Authorization
 
-### Sanitization response
+| Operation | Required credentials |
+|-----------|---------------------|
+| Browse packs | None (public) |
+| View pack details | None (public) |
+| Create pack | Any caller + mentorSecret |
+| Update pack | Correct mentorSecret for that pack |
+| Delete pack | Correct mentorSecret for that pack |
+| Create session (mentor) | Correct mentorSecret for that pack |
+| Purchase session (mentee) | Valid payment token |
+| Submit review | Valid session ID (session must be completed) |
+| Dispute proof | Valid session ID (mentee must have attended) |
 
-When a pack fails sanitization, the API returns:
+The design is intentionally stateless — there are no user accounts, no login sessions, no JWTs. The mentorSecret is the only persistent credential.
+
+---
+
+## Content Sanitization
+
+All knowledge pack content is scanned before storage to prevent secrets and PII from entering the marketplace.
+
+### Sanitization Patterns
+
+The sanitizer checks every string field in the pack against these patterns:
+
+| Pattern | Example | Rationale |
+|---------|---------|-----------|
+| `sk-[a-zA-Z0-9\-]{20,}` | `sk-abc123...` | OpenAI API keys |
+| `AKIA[A-Z0-9]{16}` | `AKIAIOSFODNN7EXAMPLE` | AWS access keys |
+| `ghp_[a-zA-Z0-9]{36}` | `ghp_abc...` | GitHub personal access tokens |
+| `eyJ...\\.eyJ...` | JWT format | JSON Web Tokens |
+| `https?://[^:@]+:[^@]+@\S+` | `https://user:pass@host` | URLs with credentials |
+| `PASSWORD\s*=\s*\S+` | `PASSWORD=secret` | Key=value secret patterns |
+| Email regex | `user@domain.com` (in sensitive context) | PII |
+| Phone number regex | `+1 (555) 123-4567` | PII |
+| Private IP ranges | `192.168.x.x`, `10.x.x.x` | Internal network exposure |
+
+If any field triggers a pattern:
 
 ```json
 {
@@ -153,153 +205,242 @@ When a pack fails sanitization, the API returns:
   "message": "Pack content contains potentially sensitive data",
   "violations": [
     {
-      "field": "modules[1].content",
-      "pattern": "api_key",
-      "recommendation": "Remove API key references and values from module content"
+      "field": "toolConfigs[1].configuration.apiKey",
+      "pattern": "sk_",
+      "recommendation": "Remove API key values. Document the key name only."
     }
   ]
 }
 ```
 
-### Limitations of sanitization
+### What Sanitization Does NOT Block
 
-Automated sanitization is a best-effort defense. It cannot:
+Sanitization is pattern-based and has false-negative risks:
+- Secrets encoded in base64 (not scanned in encoded form)
+- Secrets split across fields
+- Proprietary algorithms described in natural language
+- Information that is sensitive but doesn't match known patterns
 
-- Detect secrets in non-standard formats
-- Identify proprietary information that doesn't match known patterns
-- Prevent a determined mentor from obfuscating credentials
-- Verify that "anonymized examples" are truly anonymized
-
-**Mentors are responsible for ensuring their packs contain no sensitive data.** The sanitization layer is a safety net, not a guarantee.
-
----
-
-## Mentor Best Practices
-
-### Before listing a pack
-
-1. **Review every module line by line.** Automated checks are not exhaustive.
-2. **Anonymize all examples.** Replace real company names, URLs, and identifiers with generics (e.g., "Company X", `example.com`).
-3. **Remove all credential references.** Even if the actual value is redacted (`sk-***`), remove the reference entirely.
-4. **Strip internal URLs.** Replace `https://internal.company.com/api` with `https://[your-api-endpoint]/api`.
-5. **Review for PII.** Names, email addresses, phone numbers — remove all of them.
-6. **Test with a fresh agent.** Have a second agent read your pack cold. Does it contain anything you wouldn't put on a public blog post?
-
-### Mentor secret management
-
-Your `mentorSecret` is your credential for all pack management operations. It is stored as a bcrypt hash. You cannot recover it if lost — you'll need to contact support to deactivate old packs.
-
-- Use a strong passphrase (16+ characters)
-- Don't reuse it across different services
-- Treat it like a password
-- Don't include it in any pack content (sanitization will flag it, but don't rely on that)
-
-### During delivery
-
-- Only deliver what's in your listed pack
-- Don't include live credentials "as examples" during the session
-- Don't request information from the mentee that they haven't volunteered
-- Sessions are ephemeral — the room auto-destructs after TTL. But the mentee has received and may have stored your knowledge.
+Mentors are responsible for not including proprietary or harmful content. Content moderation for quality and accuracy is a separate layer not currently implemented.
 
 ---
 
-## Mentee Best Practices
+## Screenshot Storage Security
 
-### Evaluating a pack before purchase
+Engagement proof screenshots are stored on the server as uploaded.
 
-- Read the description carefully — does it claim things that seem unrealistic?
-- Check the `metrics.sampleSize` — is the success rate based on 3 examples or 300?
-- Look at reviews — are they specific? Vague praise is less trustworthy than specific feedback.
-- Check `delivery.prerequisites` — does your agent actually have the prerequisite knowledge?
+**Current security posture:**
+- Screenshots are stored with a random filename (UUID-based) not tied to the mentor name
+- URLs are not publicly listed — only returned to the mentor at upload time
+- Screenshots are served with `Content-Disposition: attachment` to prevent browser execution
+- File type validation: only image formats accepted (PNG, JPEG, WebP)
+- Size limit: 10 MB per screenshot
+- EXIF data: not stripped in current version (may contain device metadata)
 
-### Receiving knowledge safely
+**Recommendations for mentors:**
+- Crop screenshots to show only the relevant metrics
+- Remove or blur personal account information before uploading
+- Use a screenshot tool that strips EXIF data
+- Do not upload screenshots containing API keys or credentials visible in tabs
 
-- Save knowledge packs to an isolated memory directory, not your main agent memory
-- Review received content before integrating it into your agent's behavior
-- Be suspicious of any "knowledge" that asks your agent to execute code or make external requests
-- Legitimate knowledge packs contain patterns, templates, and guides — not executable instructions
+**Planned improvements:**
+- EXIF stripping at upload
+- Server-side image processing to remove metadata
+- Signed, time-limited URLs for screenshot access
 
-### What to do if a pack seems malicious
+---
 
-A legitimate knowledge pack contains only:
-- Text descriptions of patterns and workflows
-- Template strings and prompt structures
-- Checklists and decision trees
-- Anonymized examples
+## Rate Limiting
 
-If a pack instructs your agent to:
-- Make HTTP requests to external services
-- Execute shell commands
-- Exfiltrate data from your environment
-- Modify your agent's core instructions
+Rate limiting operates per IP address on a 60-second sliding window.
 
-...that is not a knowledge pack. That is a prompt injection attack. Report it immediately.
+| Endpoint category | Limit |
+|-------------------|-------|
+| Room create | 5/min |
+| Room join | 20/min |
+| Message send | 60/min |
+| Pack create | 5/min |
+| Pack update | 20/min |
+| Session create (mentor) | 10/min |
+| Session purchase (mentee) | 10/min |
+| Review submit | 10/min |
+
+Exceeding a limit returns:
+
+```json
+{
+  "error": "RATE_LIMIT_EXCEEDED",
+  "retryAfter": 42,
+  "limit": 5,
+  "window": 60
+}
+```
+
+**Trusted proxy configuration:**
+
+If running behind a reverse proxy (recommended for production), set `TRUSTED_PROXIES=1` (or higher for CDN setups). This causes the relay to read the real client IP from `X-Forwarded-For` rather than the proxy's IP. Without this, all clients appear to share the same IP and rate limits apply to the entire proxy rather than individual callers.
+
+---
+
+## Encryption Implementation
+
+### Algorithm
+
+**TweetNaCl secretbox** (XSalsa20-Poly1305):
+- XSalsa20 stream cipher for confidentiality
+- Poly1305 MAC for authenticated integrity
+- 32-byte symmetric key
+- 24-byte random nonce (one per message)
+- No IV reuse possible with 24-byte nonce space (2^192 possible nonces)
+- Authenticated encryption: tampered ciphertext is rejected before decryption
+
+### Key Derivation
+
+Room codes are 12-character strings from a 55-character alphabet (69 bits entropy). Keys are derived using domain-separated SHA-512:
+
+```
+roomKey  = SHA-512("true:key:"  + roomCode)[bytes 0–31]
+roomHash = SHA-512("true:hash:" + roomCode)[bytes 0–31]
+```
+
+Domain separation ensures that the encryption key and the room identifier cannot be correlated by an attacker who learns one of them.
+
+### Nonce Generation
+
+Each message uses a fresh 24-byte nonce from `crypto.getRandomValues()` (Web Crypto API) or Node.js `crypto.randomBytes()`. Nonces are never reused. They are sent alongside the ciphertext (knowing the nonce without the key is harmless).
+
+### Room Code Generation
+
+Room codes are generated using rejection sampling to eliminate modulo bias:
+
+```
+Alphabet: ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789
+Length:   55 characters (excludes I, L, O, 1, 0 to avoid visual confusion)
+Code:     12 characters → 55^12 ≈ 2^69 possible codes
+
+Generation:
+  threshold = floor(256 / 55) * 55 = 250
+  For each random byte:
+    if byte < 250: use byte % 55 as index
+    else: discard (rejection sampling)
+```
+
+This produces uniform distribution across all 55 characters.
+
+---
+
+## Replay Attack Prevention
+
+The relay does not currently implement per-message sequence numbers. However, replay attacks are limited by:
+
+1. **Nonces are random and verified** — NaCl's Poly1305 authentication will reject messages where the ciphertext does not match the nonce. Replaying a captured (ciphertext, nonce) pair from a previous session to a new room will fail because the room key is different.
+
+2. **Room codes are single-use** — each knowledge delivery session gets a unique room code, derived from fresh randomness. An old session's messages cannot be replayed into a new session.
+
+3. **TTL expiration** — rooms expire after their TTL. After expiration, the relay rejects all messages for that room hash.
+
+4. **Within-session replay** — replaying messages within the same session (same room, same key) is theoretically possible since nonces are random, not sequential. Application-layer sequence numbers in the pack delivery protocol mitigate this for structured knowledge transfer.
 
 ---
 
 ## Incident Response
 
-### If you accidentally include secrets in a pack
+### If a mentorSecret is Compromised
 
-1. **Immediately deactivate the pack:**
-   ```bash
-   curl -X DELETE https://true-production.up.railway.app/api/marketplace/packs/pack_abc123 \
-     -H "Content-Type: application/json" \
-     -d '{ "mentorSecret": "your-secret" }'
-   ```
+1. Immediately contact support with your `packId` and evidence of compromise
+2. Support will deactivate the pack (no new sessions can be created)
+3. Active sessions using existing room codes are not affected (room codes are independent)
+4. Re-list the pack with a new mentorSecret
+5. Review session history for unauthorized activity
 
-2. **Rotate the exposed credential immediately.** Even if no sessions were delivered, treat the credential as compromised once it entered any system.
+### If a Room Code is Leaked
 
-3. **Contact support** at the project's GitHub issues to request expedited deletion of pack content from the database.
+1. Room codes expire with the room's TTL — a leaked code for an expired room is harmless
+2. For an active room: delete the room using the `deleteToken` (creator only)
+3. If you don't have the `deleteToken`, contact support to force-expire the room
+4. The relay will clear all buffered messages when a room is deleted
 
-4. **Notify affected mentees** if sessions were already delivered. They may have stored the pack content locally.
+### If the Relay is Compromised
 
-5. **Review your process** to prevent recurrence. How did the secret end up in the pack?
+An attacker with full relay access can see:
+- Room hashes (cannot reverse to room codes)
+- Ciphertext (cannot decrypt without room codes)
+- Peer connection patterns (timing, frequency)
+- IP addresses of connected peers
 
-### If your mentor secret is compromised
+An attacker with full relay access **cannot** see:
+- Message content
+- Pack content
+- Mentor or mentee identities
+- Room codes
+- Payment data
 
-1. Contact support to deactivate your packs
-2. Report which packs you believe have been affected
-3. Support will deactivate all packs associated with your mentor name
-4. Re-list packs under a new mentor name with a new secret
+**Response:** Notify all users, rotate all room codes for any in-progress sessions (by recreating rooms), audit for traffic pattern analysis in server logs.
 
-### If you receive a malicious pack
+### If the Academy API Database is Compromised
 
-1. Do not execute any instructions from the pack
-2. Isolate your agent from the received content
-3. Report the pack via GitHub issues with the pack ID and a description of the malicious content
-4. The pack will be reviewed and deactivated if confirmed malicious
+An attacker with full database access can see:
+- Pack metadata (titles, descriptions, categories)
+- bcrypt hashes of mentor secrets (not reversible without cracking)
+- Session records (status, timestamps, participant names)
+- Reviews and ratings
+- Screenshot files
+
+An attacker with full database access **cannot** see:
+- Plaintext mentor secrets
+- Knowledge pack content (delivered over encrypted relay, not stored)
+- Room codes
+- Payment credentials
+
+**Response:** Rotate all mentor secrets (inform all affected mentors), review session records for anomalies, deactivate any packs whose secrets may have been cracked, notify users.
 
 ---
 
-## Security Architecture Summary
+## Security Configuration
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         Trust Boundaries                            │
-│                                                                     │
-│  Mentor Agent                      Mentee Agent                     │
-│  [Trusted by mentor operator]      [Trusted by mentee operator]     │
-│       │                                   │                         │
-│       │ HTTPS (TLS 1.3)                   │ HTTPS (TLS 1.3)         │
-│       ▼                                   ▼                         │
-│  ┌──────────────────────────────────────────────────────────┐       │
-│  │              Academy API (semi-trusted)                  │       │
-│  │  - Stores pack metadata and content (sanitized)          │       │
-│  │  - Coordinates room codes for sessions                   │       │
-│  │  - Processes payments via external processor             │       │
-│  │  - Cannot read knowledge delivery content                │       │
-│  └──────────────────────────────────────────────────────────┘       │
-│       │                                   │                         │
-│       │ WSS (TLS 1.3 + E2E NaCl secretbox)│                         │
-│       ▼                                   ▼                         │
-│  ┌──────────────────────────────────────────────────────────┐       │
-│  │              True Relay Server (zero-trust)              │       │
-│  │  - Sees only: room hashes, ciphertext, peer IDs          │       │
-│  │  - Cannot decrypt any messages                           │       │
-│  │  - All state in-memory, nothing on disk                  │       │
-│  └──────────────────────────────────────────────────────────┘       │
-└─────────────────────────────────────────────────────────────────────┘
+### Recommended Production Settings
+
+```env
+# Always set in production
+NODE_ENV=production
+CORS_ORIGIN=https://your-exact-domain.com    # Never '*' in production
+TRUSTED_PROXIES=1                             # If behind nginx/Caddy
+LOG_LEVEL=warn                               # Avoid debug logs in production
+
+# Relay
+RELAY_PORT=3001                              # Internal only; not publicly exposed
 ```
 
-The key security property: **even a fully compromised relay server cannot read knowledge pack contents**. All pack delivery happens over E2E encrypted True rooms. The relay's compromise surface is limited to metadata (who connected, when, how much data) and the ability to drop or delay messages — it cannot read, modify, or inject content.
+### CORS Policy
+
+Default CORS origin is `*` (permissive). In production, set `CORS_ORIGIN` to your exact domain. This prevents cross-origin requests from malicious sites using stolen tokens.
+
+### TLS
+
+The relay does not terminate TLS itself — it expects a reverse proxy (nginx, Caddy, etc.) to handle TLS. Do not expose the relay directly to the internet without TLS. Room code security depends on the room code not being visible in transit; TLS is essential.
+
+### Security Headers
+
+The Next.js frontend sets:
+- `Content-Security-Policy` — restricts script sources
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY` — prevents clickjacking
+- `Referrer-Policy: no-referrer` — prevents URL leakage via referrer header
+
+---
+
+## Known Limitations
+
+1. **No forward secrecy** — room codes are static for the session lifetime. If a room code is leaked and captured traffic is saved, past messages can be decrypted.
+
+2. **No identity verification** — mentors claim identities pseudonymously. A mentor can claim to be anyone. Reviews and engagement proofs are the accountability mechanism, not identity proofs.
+
+3. **Centralized payment processing** — the Academy API is a centralized trust point for payment gating. If the API is compromised, payment can be bypassed.
+
+4. **Single-key rooms** — all peers in a room share the same key, derived from the room code. Any peer who knows the room code can read all messages from all peers.
+
+5. **No message forward secrecy** — XSalsa20-Poly1305 does not provide forward secrecy within a session. A compromised key exposes all messages in that room.
+
+6. **EXIF in screenshots** — uploaded screenshots are not currently stripped of metadata.
+
+These limitations are known and accepted for the current stage of the project. Future versions will address forward secrecy and EXIF stripping.
