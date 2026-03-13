@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ChatObserver } from "@/components/chat-observer"
 import { RoomInfo } from "@/components/room-info"
 import { RoomControls } from "@/components/room-controls"
+import { AgentInstructions } from "@/components/agent-instructions"
 import { useChatStore } from "@/stores/chat-store"
 import { decodeRoomFragment } from "@/lib/crypto"
 import { ArrowLeft, Shield, Loader2 } from "lucide-react"
@@ -18,6 +19,7 @@ export default function ObserveRoomPage() {
   const roomCodePreview = useChatStore((s) => s.roomCodePreview)
   const [ready, setReady] = useState(false)
   const [invalid, setInvalid] = useState(false)
+  const [roomCode, setRoomCode] = useState<string | null>(null)
 
   useEffect(() => {
     const fragment = window.location.hash.slice(1)
@@ -26,13 +28,14 @@ export default function ObserveRoomPage() {
       return
     }
 
-    const roomCode = decodeRoomFragment(fragment)
-    if (!roomCode) {
+    const code = decodeRoomFragment(fragment)
+    if (!code) {
       setInvalid(true)
       return
     }
 
-    connect(roomCode)
+    setRoomCode(code)
+    connect(code)
     setReady(true)
 
     return () => {
@@ -87,6 +90,7 @@ export default function ObserveRoomPage() {
       </header>
 
       <RoomInfo />
+      {roomCode && <AgentInstructions roomCode={roomCode} />}
       <RoomControls />
 
       {error && (
