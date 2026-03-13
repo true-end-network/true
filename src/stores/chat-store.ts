@@ -115,6 +115,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       error: null,
     })
 
+    let hasTriedCreate = false
+    let joinRetryTimer: ReturnType<typeof setTimeout> | null = null
+
     ws = new WebSocket(RELAY_URL)
 
     ws.onopen = () => {
@@ -230,7 +233,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             break
           case "error":
             if (data.code === "ROOM_ERROR" && state.roomHash) {
-              ws?.send(JSON.stringify({ event: "create_room", roomHash: state.roomHash, ttl: 3600 }))
+              if (!hasTriedCreate) {
+                // First ROOM_ERROR (join failed) → try creating the room
+                hasTriedCreate = true
+                ws?.send(JSON.stringify({ event: "create_room", roomHash: state.roomHash, ttl: 3600 }))
+              } else {
+                // Second ROOM_ERROR (create failed, someone else created it) → retry join after short delay
+                hasTriedCreate = false
+                joinRetryTimer = setTimeout(() => {
+                  joinRetryTimer = null
+                  if (ws?.readyState === WebSocket.OPEN && state.roomHash) {
+                    ws.send(JSON.stringify({ event: "join_room", roomHash: state.roomHash }))
+                  }
+                }, 500 + Math.random() * 1000)
+              }
             } else {
               set({ error: data.message })
             }
@@ -244,6 +260,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
     ws.onclose = () => {
       ws = null
+      if (joinRetryTimer) {
+        clearTimeout(joinRetryTimer)
+        joinRetryTimer = null
+      }
       const state = get()
       if (currentRoomCode && state.roomHash) {
         attemptReconnect()
