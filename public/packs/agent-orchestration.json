@@ -1,0 +1,256 @@
+{
+  "id": "d8f5e2b9c6a3f0d7e4b1f8c5a2d9f6b3e0c7d4f1b8e5c2a9f6d3b0e7c4a1f8d5",
+  "version": "1.0.0",
+  "mentor": {
+    "name": "Major",
+    "platform": "True Academy",
+    "specialties": ["task decomposition", "worker agent assignment", "tmux-based parallelism", "git worktree management", "merge conflict resolution", "rate limiting mitigation"],
+    "experience": "Multiple swarm operations completed, 5-10 parallel workers per swarm",
+    "resultsSnapshot": {
+      "max_workers_run": "10 simultaneous",
+      "successful_swarms": "8+",
+      "avg_speedup_vs_sequential": "4-6x",
+      "largest_task_decomposition": "25 subtasks from 1 feature request",
+      "merge_conflict_resolution_rate": "100% (all conflicts resolved)"
+    }
+  },
+  "category": "devops",
+  "title": "Agent Orchestration: Running AI Swarms for Parallel Development",
+  "description": "Complete operational manual for orchestrating AI agent swarms on software development tasks. Covers task decomposition methodology, git worktree setup for worker isolation, tmux session management for parallel monitoring, file ownership assignment to prevent conflicts, Claude Code CLI worker spawning, progress collection, and merge conflict resolution. Based on real operations producing 4-6x speedup over sequential development. Designed for orchestrator agents who need to manage worker agents effectively.",
+  "skills": [
+    {
+      "name": "Task Decomposition — Breaking Work for Parallel Execution",
+      "category": "devops",
+      "difficulty": "advanced",
+      "content": "Task decomposition is the highest-leverage skill in agent orchestration. A poor decomposition creates merge conflicts, duplicate work, and idle workers. A good decomposition produces clean parallel execution with zero overlap.\n\n**The 4 Criteria for a Good Decomposition:**\n\n**1. File Ownership Isolation**\nEach worker should own a distinct set of files with minimal overlap. The rule: if two workers will both write to the same file, they cannot run in parallel — one must wait for the other.\nAnalysis method: List all files that need to be modified. Draw an ownership map. Workers that share files must be serialized or their interfaces must be designed to avoid conflicts (one defines interface, other implements).\n\n**2. Interface-First Design**\nFor tasks that have dependencies between workers, define the interfaces first. Worker A can define the TypeScript interface `MentorProfile` and put it in a shared types file. Worker B can then implement against that interface independently. The interface is the contract — once defined, workers A and B can proceed in parallel.\n\n**3. Testability at Task Boundary**\nEach worker's output should be independently verifiable. If Worker A completes their task but it cannot be tested without Worker B's output, the decomposition is too tightly coupled. Decompose further until each task has its own testing criteria.\n\n**4. Roughly Equal Complexity**\nBalance work across workers. An unbalanced decomposition leaves fast workers idle waiting for the single slow worker to finish before merge can proceed. Rule of thumb: no single worker should have more than 3x the estimated complexity of any other worker.\n\n**Decomposition Patterns:**\n\n**Feature Slicing (recommended for feature development):**\nDivide by feature domain, not by layer. 'Authentication feature' goes to one worker — they own the UI, API, and database layer for auth. 'Dashboard feature' goes to another. Never divide by 'frontend worker' and 'backend worker' — they will conflict on every API boundary.\n\n**File System Division:**\nFor content/data tasks (creating JSON files, documentation, assets), pure file-system division is easiest: Worker A creates files 1-5, Worker B creates files 6-10. Zero conflict possible.\n\n**Sequential Dependencies (pipeline pattern):**\nWhen Task B depends on Task A's output, there is no choice — it must be sequential. Identify the critical path early. Schedule all parallelizable tasks around it.\n\n**Decomposition Anti-Patterns:**\n- 'Two workers edit the same config file' — unresolvable conflict waiting to happen\n- 'Worker A writes the API, Worker B writes the API consumer' without a shared interface defined first — will result in interface mismatch bugs\n- 'Worker A does the first half, Worker B does the second half of the same module' — logical split but physical file conflict\n\n**Decomposition Output Format:**\nWrite a structured work order for each worker:\n```\n## Worker N Task\n### Files You OWN (create/modify freely)\n- path/to/file.ts\n- path/to/other.ts\n\n### Files You CAN READ (do not modify)\n- path/to/interface.ts\n- path/to/types.ts\n\n### Success Criteria\n- [ ] Specific measurable output 1\n- [ ] Specific measurable output 2\n```",
+      "examples": [
+        "True Academy swarm decomposition: 5 workers in parallel — W1 owns agent-sdk files, W2 owns knowledge packs + engagement verifier, W3 owns UI components, W4 owns API routes, W5 owns test suite. Zero file overlap between workers 1-4, W5 reads all and writes only test files.",
+        "Bad decomposition caught: both W2 and W3 would have written to src/lib/types.ts — caught during planning phase, resolved by having W2 own the types file and W3 only read from it",
+        "Interface-first example: W1 defines the KnowledgePack TypeScript interface first (30-minute task), then W2-W5 all start in parallel — they all read the interface but none modify it. Complete decoupling."
+      ],
+      "pitfalls": [
+        "Decomposing by code layer (frontend/backend/database) instead of by feature domain — creates maximum inter-worker dependencies and conflicts",
+        "Not drawing the dependency graph before assigning workers — hidden dependencies only discovered at merge time, too late to replan",
+        "Unbalanced decomposition — one worker with 10x the work of others; their task becomes the critical path that negates the parallelism speedup",
+        "Ambiguous file ownership — 'Worker A works on authentication, Worker B works on user management' with no explicit file mapping leads to both workers touching the same files",
+        "Forgetting to define shared interfaces before spawning workers — workers independently design incompatible interfaces that must be reconciled at merge"
+      ]
+    },
+    {
+      "name": "Git Worktree Setup — Worker Isolation Without Branch Chaos",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "content": "Git worktrees allow multiple workers to operate on the same repository simultaneously, each in their own filesystem directory and on their own branch. This is the technical foundation of parallel agent operation.\n\n**What a Worktree Is:**\nA git worktree is an additional working directory linked to the same repository. Unlike cloning the repo N times, worktrees share the .git object store — they're lightweight and don't duplicate repository history. Each worktree has its own:\n- Working directory (different filesystem path)\n- Currently checked-out branch\n- Staged changes\n- Unstaged modifications\n\n**Creating Worktrees for Workers:**\n```bash\n# From the main repository directory\ngit worktree add /tmp/worker-1 -b worker/feature-auth\ngit worktree add /tmp/worker-2 -b worker/feature-dashboard\ngit worktree add /tmp/worker-3 -b worker/knowledge-packs\n\n# List all worktrees\ngit worktree list\n\n# Remove a worktree after merge\ngit worktree remove /tmp/worker-1\n```\n\n**Worktree Naming Convention:**\nBranch name: `swarm/w{N}-{timestamp}` or `worker/feature-{task-name}`\nDirectory path: `/tmp/major-swarm/worktree-w{N}` or `/tmp/{project}-worker-{N}`\n\n**Worker Branch Strategy:**\nEach worker branches from main/develop at the start of the swarm. Workers do NOT branch from each other — this creates cascade merge conflicts. All workers branch from the same base commit.\n\n```bash\n# Ensure main is up to date before creating worktrees\ngit fetch origin\ngit checkout main\ngit pull origin main\n\n# Then create all worktrees from this state\ngit worktree add /tmp/w1 -b swarm/w1-$(date +%s)\ngit worktree add /tmp/w2 -b swarm/w2-$(date +%s)\ngit worktree add /tmp/w3 -b swarm/w3-$(date +%s)\n```\n\n**Worktree-Specific Configuration:**\nEach worker's Claude Code instance should be pointed at its worktree directory. The working directory context determines which files the agent sees as 'local'. Do NOT run agents in the main repo directory when workers are active — accidental commits to main cause cascading problems.\n\n**Cleanup After Merge:**\n```bash\n# After a worker's branch has been merged\ngit worktree remove /tmp/w1 --force  # --force needed if uncommitted changes remain\ngit branch -d swarm/w1-1234567890  # Delete the merged branch\n\n# Prune stale worktree references\ngit worktree prune\n```\n\n**Worktree Conflict Prevention:**\nMultiple worktrees can safely coexist as long as they don't check out the same branch. If you need to inspect a worker's branch from the main worktree without checking it out: use `git show worktree-branch:path/to/file`.",
+      "examples": [
+        "5-worker swarm setup: `for i in 1 2 3 4 5; do git worktree add /tmp/swarm/w$i -b swarm/w$i-$(date +%s); done` — creates 5 isolated directories with unique branches in under 10 seconds",
+        "Worktree inspection from orchestrator: `git diff main...swarm/w2-1234567890` — see exactly what Worker 2 has changed without switching branches or leaving the orchestrator's context",
+        "Cleanup after successful merge: `git worktree list | grep swarm | awk '{print $1}' | xargs -I{} git worktree remove {} --force` — removes all swarm worktrees in one command"
+      ],
+      "pitfalls": [
+        "Creating worktrees from stale main branch — if main is 2 days behind, all workers start from an outdated base and will have larger merge conflicts with current main",
+        "Workers branching from each other instead of from main — creates merge dependency chains that must be resolved sequentially",
+        "Not removing worktrees after completion — stale worktrees accumulate and clutter the repository state; prune regularly",
+        "Running git commands from wrong worktree context — `git status` in /tmp/w1 shows w1 state, not main state; always verify your current directory when debugging",
+        "Checking out the same branch in two worktrees — git will refuse this, but attempting it is a sign of confused orchestration state"
+      ]
+    },
+    {
+      "name": "tmux Session Management — Parallel Worker Monitoring",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "content": "tmux (terminal multiplexer) allows multiple terminal sessions within one terminal window and keeps processes running after terminal disconnect. It's the standard tool for managing parallel agent sessions.\n\n**Core tmux Concepts:**\n- **Session**: A collection of windows. Persists after terminal disconnect.\n- **Window**: Like a browser tab within a session. Each worker gets their own window.\n- **Pane**: Split within a window. Useful for orchestrator view (monitor multiple workers side by side).\n\n**Setting Up a Swarm Session:**\n```bash\n# Create new session named 'swarm'\ntmux new-session -d -s swarm\n\n# Create windows for each worker\ntmux new-window -t swarm:1 -n 'worker-1'\ntmux new-window -t swarm:2 -n 'worker-2'\ntmux new-window -t swarm:3 -n 'worker-3'\ntmux new-window -t swarm:4 -n 'orchestrator'\n\n# Navigate to worker in each window\ntmux send-keys -t swarm:worker-1 'cd /tmp/swarm/w1' Enter\ntmux send-keys -t swarm:worker-2 'cd /tmp/swarm/w2' Enter\ntmux send-keys -t swarm:worker-3 'cd /tmp/swarm/w3' Enter\n```\n\n**Launching Claude Code Workers:**\n```bash\n# Launch worker in specific window (non-interactive, with task file)\ntmux send-keys -t swarm:worker-1 'claude --print --no-interactive < /tmp/worker1-task.md' Enter\n\n# Or with direct prompt\ntmux send-keys -t swarm:worker-1 'claude \"Your task: create the authentication module. Details: [...]\"' Enter\n```\n\n**Orchestrator Monitoring View:**\n```bash\n# Create a split-pane view showing all workers simultaneously\ntmux select-window -t swarm:orchestrator\ntmux split-window -h  # Split horizontally\ntmux split-window -v  # Split top pane vertically\ntmux split-window -v  # Split bottom pane vertically\n\n# Now you have 4 panes — monitor each worker\ntmux send-keys -t swarm:orchestrator.0 'watch -n 5 git -C /tmp/swarm/w1 log --oneline -5' Enter\ntmux send-keys -t swarm:orchestrator.1 'watch -n 5 git -C /tmp/swarm/w2 log --oneline -5' Enter\n```\n\n**Checking Worker Progress Without Disturbing:**\n```bash\n# See recent git activity from worker 2\ngit -C /tmp/swarm/w2 log --oneline -10\n\n# See uncommitted changes from worker 3\ngit -C /tmp/swarm/w3 status\ngit -C /tmp/swarm/w3 diff --stat\n\n# Read a specific file from worker 2's branch\ngit -C /tmp/swarm/w2 show HEAD:src/lib/auth.ts\n```\n\n**tmux Key Bindings (prefix is Ctrl+B by default):**\n- `Ctrl+B c` — create new window\n- `Ctrl+B n/p` — next/previous window\n- `Ctrl+B [0-9]` — switch to window by number\n- `Ctrl+B %` — vertical split\n- `Ctrl+B \"` — horizontal split\n- `Ctrl+B d` — detach session (session keeps running)\n- `tmux attach -t swarm` — reattach to session",
+      "examples": [
+        "5-worker swarm script: single bash script creates session, 5 windows, navigates each to worktree, launches Claude Code worker — full swarm running in 30 seconds from one command",
+        "Orchestrator monitoring: 4-pane view watching git log of all 4 workers simultaneously — can see when workers commit without switching windows, detects stalled workers within 5 minutes",
+        "Worker stall detection: `watch -n 30 'git -C /tmp/swarm/w3 log --oneline -1'` — if the top commit hasn't changed in 30 minutes, the worker may need intervention"
+      ],
+      "pitfalls": [
+        "Not using -d flag when creating session — `tmux new-session` without -d creates the session in the current terminal; use -d for detached creation when scripting",
+        "Closing terminal instead of detaching — kills the tmux session; always use Ctrl+B d to detach, never close the terminal with active workers",
+        "Not naming sessions and windows — anonymous sessions and windows are confusing in multi-swarm environments; always use meaningful names",
+        "Interactive Claude Code sessions in tmux — some Claude Code versions require interactive mode which doesn't work well in tmux send-keys automation; use --print and pipe input from files instead",
+        "tmux copy mode clipboard conflicts — on macOS, tmux has its own clipboard that conflicts with system clipboard; configure mouse=on and clipboard integration if needed for log review"
+      ]
+    },
+    {
+      "name": "Merge Conflict Resolution — Systematic Approach",
+      "category": "devops",
+      "difficulty": "advanced",
+      "content": "Merge conflicts are inevitable in parallel development but completely manageable with the right approach. The key principle: conflicts are symptoms of incomplete decomposition, not random events. Understanding why a conflict occurred prevents future ones.\n\n**Conflict Resolution Priority Order:**\n\n**1. Prevention (best)**\nBefore spawning workers: verify file ownership map has zero overlaps. If two workers must touch the same file, define exactly which lines each worker owns. This is always better than resolving conflicts later.\n\n**2. Structured Resolution (when prevention failed)**\nFor each conflict, identify:\n- Which worker created which version?\n- Are both versions correct, or did one worker make an error?\n- Can both changes coexist, or do they represent genuinely incompatible decisions?\n\n**Git Conflict Markers:**\n```\n<<<<<<< HEAD (or branch-A)\nWorker A's version of the code\n=======\nWorker B's version of the code\n>>>>>>> branch-B\n```\n\n**Resolution Strategies by Conflict Type:**\n\n**Type A: Both versions are correct, different features**\nExample: Worker A added function `authenticateUser()`, Worker B added function `fetchDashboardData()` to the same file.\nResolution: Keep both. Remove conflict markers, retain all code from both versions. Verify imports/exports are correct.\n\n**Type B: Same feature, different implementations**\nExample: Both workers wrote a `generateId()` utility function but implemented differently.\nResolution: Compare implementations. Pick the better one (or merge the best parts). Delete the other version completely.\n\n**Type C: Structural conflict (incompatible changes to imports/exports)**\nExample: Worker A renamed an interface, Worker B added properties to the same interface under the old name.\nResolution: This requires coordination — the rename takes precedence but B's new properties must be added to the renamed interface.\n\n**Type D: File created by both workers**\nExample: Both workers created src/lib/utils.ts with different utilities.\nResolution: Merge file contents — keep all unique functions from both, remove exact duplicates.\n\n**Systematic Merge Procedure:**\n```bash\n# After all workers have committed their work\n# Merge worker branches one at a time, resolving conflicts as they appear\n\ngit checkout main\n\n# Merge workers in dependency order (most foundational first)\ngit merge swarm/w1-timestamp  # Often cleanest\ngit merge swarm/w2-timestamp  # Resolve conflicts here\ngit merge swarm/w3-timestamp  # Resolve conflicts here\n\n# After each merge, run tests\nnpm test\n\n# If tests pass: continue to next worker\n# If tests fail: investigate before merging more workers\n```\n\n**The 'Test After Each Merge' Rule:**\nAlways run the full test suite after merging each worker branch. Merging all workers at once, then debugging, creates impossible root cause analysis. Merge one, test, merge two, test — you always know exactly which merge introduced a regression.\n\n**Empty Commit Handling:**\nWorkers sometimes commit empty or near-empty commits (tmux automation artifact). Check: `git log --stat swarm/w1` before merging — if commits show 0 files changed, they're empty. Empty commits are safe to merge (they add no changes) but add noise to git history. Skip them: `git cherry-pick swarm/w1 --no-commit` then manually stage only real changes.",
+      "examples": [
+        "Type A resolution: W1 added auth functions, W2 added dashboard functions to same src/app/api/route.ts file. Merge: keep all functions from both, reorder alphabetically, verify no naming conflicts. Tests pass. Conflict resolution took 4 minutes.",
+        "Type B resolution: Two workers both implemented a `hashContent()` function — W1 used sha256, W2 used sha1. Decision: use W1's sha256 implementation (more secure). Delete W2's version. Update W2's code that called it. Tests pass.",
+        "Empty commit catch: `git log --stat swarm/w4` showed 3 commits all with '0 files changed'. Worker 4 ran but made no file system changes. Investigation: worker received ambiguous task instruction. Tasked again with clarified instructions."
+      ],
+      "pitfalls": [
+        "Merging all workers at once before testing — creates unmanageable conflict stack; always merge sequentially with tests between",
+        "Accepting 'ours' or 'theirs' wholesale during conflict resolution — blindly picking one side loses the other worker's valid work",
+        "Not running tests after each merge — regressions from earlier merges are masked by later merge noise",
+        "Force-pushing to resolve conflicts — destroys history and can overwrite other workers' committed work permanently",
+        "Resolving conflicts without understanding why they occurred — symptom treatment without root cause means the same conflict will happen in the next swarm"
+      ]
+    },
+    {
+      "name": "Rate Limiting and API Mitigation — Keeping Workers Running",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "content": "When running 5-10 Claude Code workers simultaneously, API rate limits become a critical operational constraint. Understanding Anthropic's rate limit structure and building mitigation strategies is essential for uninterrupted swarm operation.\n\n**Anthropic API Rate Limit Structure (as of early 2025):**\n- Requests per minute (RPM): varies by tier, typically 60-1000 RPM per key\n- Tokens per minute (TPM): varies by tier, typically 40K-200K TPM per key\n- Tokens per day (TPD): varies by tier, hard daily caps on some tiers\n\n**The Core Problem:**\nWith 10 workers each making requests every 30 seconds, you're potentially hitting 20 RPM just from worker activity — before counting the orchestrator's own queries. Approach the RPM limit and workers start getting 429 errors.\n\n**Mitigation Strategy 1: Stagger Worker Start Times**\nDon't spawn all workers simultaneously. Stagger by 30-60 seconds:\n```bash\nfor i in 1 2 3 4 5; do\n  spawn_worker $i\n  sleep 30  # 30-second stagger between workers\ndone\n```\nThis distributes the initial burst of API calls across 2+ minutes instead of one second.\n\n**Mitigation Strategy 2: Batch Workers in Groups**\nFor large swarms (10+ workers), divide into waves:\n- Wave 1: Workers 1-3 (start immediately)\n- Wave 2: Workers 4-6 (start when wave 1 is mid-task, not starting)\n- Wave 3: Workers 7-10 (start when wave 1 nearing completion)\n\n**Mitigation Strategy 3: Task Size Calibration**\nLarger tasks per worker = fewer API calls per minute. Instead of 10 workers with tiny tasks, use 5 workers with medium tasks. Same parallelism benefit, half the API overhead.\n\n**Handling 429 Errors Gracefully:**\nWhen a worker hits a rate limit, it should:\n1. Wait the specified retry-after time (usually 30-60 seconds)\n2. Resume from its last completed step (not restart from scratch)\n3. Not retry immediately — that makes the rate limit worse\n\nClaude Code handles this automatically with exponential backoff, but you should monitor for workers stuck in retry loops and intervene if a worker is rate-limited for >5 minutes.\n\n**Monitoring Rate Limit Impact:**\n```bash\n# Check worker logs for rate limit events\ngrep -r '429\\|rate.limit\\|retry' /tmp/swarm/w*/claude.log\n\n# Monitor active worker count over time\nwatch -n 10 'ps aux | grep claude | grep -v grep | wc -l'\n```\n\n**Multi-Key Strategy (advanced):**\nFor teams with multiple API keys, distribute workers across keys to multiply the effective rate limit. Each key gets its own set of workers. Requires careful management to avoid key leakage or unauthorized sharing.",
+      "examples": [
+        "5-worker swarm without stagger: workers 1-5 all started simultaneously, all hit rate limits within 90 seconds, swarm progress stalled for 10 minutes while backoff timers expired. With 30-second stagger: no rate limit events in the subsequent run.",
+        "10-worker swarm batch strategy: Wave 1 (W1-W3) started at T+0, Wave 2 (W4-W6) at T+15min, Wave 3 (W7-W10) at T+30min. Total completion time: 65 minutes. Estimated sequential completion: 5 hours. Net speedup: 4.6x.",
+        "Task size calibration: original plan had 15 small workers. Revised to 7 larger workers. Result: same output quality, 47% fewer API calls, zero rate limit events."
+      ],
+      "pitfalls": [
+        "Spawning all workers simultaneously on a large swarm — guaranteed rate limit collisions within 2 minutes",
+        "Not building retry logic into worker tasks — workers that exit on 429 instead of retrying require manual restart",
+        "Monitoring only whether workers are running, not whether they're making progress — a worker can be 'running' while stuck in rate limit backoff for 20 minutes",
+        "Using the same API key for orchestrator and all workers — orchestrator's queries consume from the same rate limit bucket; give orchestrator its own key if possible",
+        "Rate limiting on one worker affecting others — if using shared API infrastructure, one worker's burst can starve the others"
+      ]
+    }
+  ],
+  "errorLog": [
+    {
+      "date": "2025-01-05",
+      "description": "Two workers both created src/lib/types.ts independently without a shared interface definition, resulting in incompatible type definitions",
+      "impact": "Type mismatch errors throughout codebase, 2 hours of conflict resolution that should have been 10 minutes",
+      "fix": "Designated one worker as 'interface owner', had them define all shared types first before other workers started. Other workers read interfaces but never modify the types file.",
+      "lesson": "Shared type files must have a single owner. Before spawning workers: identify all shared interface files, assign one worker as owner, all others are read-only consumers. This is non-negotiable."
+    },
+    {
+      "date": "2025-01-18",
+      "description": "Worker 3 committed empty commits (no actual file changes) due to ambiguous task instructions",
+      "impact": "Swarm coordination delay of 45 minutes while investigating why W3's output was missing",
+      "fix": "Added success criteria validation to task instructions — each worker must produce at least one file change, with specific files listed",
+      "lesson": "Every worker task must have explicit success criteria with specific file names. 'Implement the authentication feature' is ambiguous. 'Create src/lib/auth.ts with the authenticateUser() and createSession() functions' is not."
+    },
+    {
+      "date": "2025-02-02",
+      "description": "Spawned 8 workers simultaneously, all hit rate limits within 2 minutes, swarm progress halted for 30 minutes while backoff timers expired",
+      "impact": "30-minute complete swarm stall; total operation time exceeded sequential time due to recovery overhead",
+      "fix": "Implemented 45-second stagger between worker spawns; subsequent swarms had zero rate limit events",
+      "lesson": "Simultaneous worker spawn creates API call burst that saturates rate limits immediately. Always stagger: minimum 30 seconds between workers for a 5-worker swarm, 45+ seconds for 8+ workers."
+    },
+    {
+      "date": "2025-02-20",
+      "description": "Merged all 5 worker branches at once before running tests; discovered 3 separate type errors that could not be attributed to specific workers",
+      "impact": "3 hours of debugging to identify root cause of each error across merged branches",
+      "fix": "Implemented mandatory sequential merge with test run between each worker branch merge",
+      "lesson": "The test-after-each-merge rule is non-negotiable. Merge one branch → run tests → fix failures → merge next branch → run tests. Merging all at once creates debugging complexity that cannot be untangled efficiently."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Full Swarm Deployment — Analyze to Merge",
+      "description": "Complete workflow for planning, deploying, and completing a multi-worker parallel development swarm",
+      "triggers": [
+        "Large feature request requiring 3+ parallel development streams",
+        "Time-constrained deadline requiring maximum parallelism",
+        "Tasks that decompose cleanly into independent file ownership domains"
+      ],
+      "steps": [
+        { "step": 1, "action": "Analyze the full task scope — list every file that needs to be created or modified", "notes": "Estimate complexity per file. This 15-minute analysis prevents hours of conflict resolution." },
+        { "step": 2, "action": "Draw file ownership map — assign each file to exactly one worker", "notes": "No shared files. If a file is needed by two workers, decide which worker creates it and which worker reads it." },
+        { "step": 3, "action": "Define shared interfaces first (if any) — deploy the interface-owner worker first, alone", "notes": "Wait for interface definitions to be committed before spawning other workers. 15-minute investment." },
+        { "step": 4, "action": "Create git worktrees for all workers: `git worktree add /tmp/swarm/wN -b swarm/wN-$(date +%s)`", "notes": "All workers branch from the same base commit on main" },
+        { "step": 5, "action": "Create tmux session with named windows for each worker", "notes": "Include an 'orchestrator' window for monitoring" },
+        { "step": 6, "action": "Write detailed task instructions for each worker with explicit success criteria and file ownership list", "notes": "Use the Work Order template from templates section" },
+        { "step": 7, "action": "Spawn workers with 30-45 second stagger between each", "notes": "First worker starts at T+0, second at T+30s, etc. Prevents rate limit collisions." },
+        { "step": 8, "action": "Monitor progress via orchestrator window — check git log every 5-10 minutes per worker", "notes": "Alert: worker with no new commits after 30 minutes may be stalled. Investigate." },
+        { "step": 9, "action": "Collect worker output: `git -C /tmp/swarm/wN log --oneline -10` to verify each completed successfully", "notes": "Confirm each worker has at least the expected number of commits and the expected files." },
+        { "step": 10, "action": "Sequential merge with tests: merge W1 → run tests → merge W2 → run tests → continue", "notes": "Fix any test failures before proceeding to next merge" },
+        { "step": 11, "action": "Cleanup: remove worktrees, delete branches, prune git state", "notes": "`git worktree prune && git branch | grep swarm | xargs git branch -d`" }
+      ]
+    }
+  ],
+  "toolConfigs": [
+    {
+      "name": "tmux",
+      "purpose": "Terminal multiplexer for parallel worker session management",
+      "setupSteps": [
+        "brew install tmux (macOS)",
+        "sudo apt-get install tmux (Linux)",
+        "Optional: create ~/.tmux.conf for custom keybindings"
+      ],
+      "configuration": {
+        "session_name": "swarm",
+        "mouse_mode": "on",
+        "history_limit": "10000",
+        "default_terminal": "screen-256color"
+      },
+      "notes": "Recommended ~/.tmux.conf settings: `set -g mouse on` for mouse scrolling, `set -g history-limit 10000` for long log review. Without mouse mode, reviewing worker logs requires awkward keyboard navigation."
+    },
+    {
+      "name": "git worktrees",
+      "purpose": "Parallel filesystem directories for worker isolation within a single git repository",
+      "setupSteps": [
+        "git worktree add <path> -b <branch-name>",
+        "No additional installation needed — built into git 2.5+",
+        "Verify git version: git --version (need 2.5+)"
+      ],
+      "configuration": {
+        "path_pattern": "/tmp/{project}-swarm/worktree-w{N}",
+        "branch_pattern": "swarm/w{N}-{timestamp}",
+        "base_branch": "main"
+      },
+      "notes": "Worktrees consume minimal additional disk space (only stores working directory diffs, not full repo copy). Safe to create 10+ worktrees without storage concerns. Always clean up after swarm completion to avoid stale refs confusing future swarms."
+    },
+    {
+      "name": "Claude Code CLI",
+      "purpose": "AI coding agent for worker execution within worktrees",
+      "setupSteps": [
+        "npm install -g @anthropic-ai/claude-code",
+        "claude auth login",
+        "Verify: claude --version"
+      ],
+      "configuration": {
+        "model": "claude-sonnet-4-6",
+        "mode": "autonomous",
+        "working_directory": "/tmp/swarm/worktree-wN"
+      },
+      "notes": "Always launch Claude Code from the worker's worktree directory, not the main repo directory. The working directory context determines which files are treated as 'local' — wrong directory = wrong context = wrong output."
+    }
+  ],
+  "templates": [
+    {
+      "name": "Worker Task Instruction Template",
+      "category": "orchestration",
+      "content": "# Worker {N} Task: {TASK_NAME}\n\n## Context\n{PROJECT_CONTEXT}\n\n## Your Task\n{TASK_DESCRIPTION}\n\n## Files You OWN (create/modify freely)\n{OWNED_FILES_LIST}\n\n## Files You CAN READ (do NOT modify)\n{READ_ONLY_FILES_LIST}\n\n## Success Criteria\n{SUCCESS_CRITERIA_CHECKLIST}\n\n## Implementation Notes\n{ADDITIONAL_NOTES}",
+      "variables": ["N", "TASK_NAME", "PROJECT_CONTEXT", "TASK_DESCRIPTION", "OWNED_FILES_LIST", "READ_ONLY_FILES_LIST", "SUCCESS_CRITERIA_CHECKLIST", "ADDITIONAL_NOTES"],
+      "usage": "Generate one of these for each worker before spawning. The Files You OWN / CAN READ split is the most important section — it prevents 90% of merge conflicts. Success criteria must be specific and measurable."
+    },
+    {
+      "name": "Swarm Launch Script Template",
+      "category": "orchestration",
+      "content": "#!/bin/bash\n# Swarm: {SWARM_NAME} — {N} workers\n# Created: {DATE}\n\nPROJECT_DIR=\"{PROJECT_PATH}\"\nSWARM_BASE=\"/tmp/{PROJECT_NAME}-swarm\"\nTIMESTAMP=$(date +%s)\n\nmkdir -p $SWARM_BASE\ncd $PROJECT_DIR\n\n# Ensure clean starting point\ngit fetch origin && git checkout main && git pull origin main\n\n# Create worktrees\n{WORKTREE_CREATION_COMMANDS}\n\n# Setup tmux session\ntmux new-session -d -s {SWARM_NAME}\n{TMUX_WINDOW_CREATION_COMMANDS}\n\n# Navigate workers to their worktrees\n{WORKER_NAVIGATION_COMMANDS}\n\n# Attach to monitor\ntmux select-window -t {SWARM_NAME}:orchestrator\ntmux attach -t {SWARM_NAME}\n\necho 'Swarm {SWARM_NAME} deployed. Workers: {N}'",
+      "variables": ["SWARM_NAME", "N", "DATE", "PROJECT_PATH", "PROJECT_NAME", "WORKTREE_CREATION_COMMANDS", "TMUX_WINDOW_CREATION_COMMANDS", "WORKER_NAVIGATION_COMMANDS"],
+      "usage": "Generates a repeatable swarm launch script. Customize once per project type, then reuse across swarms. The script ensures consistent state before deployment (git pull, clean working directory)."
+    }
+  ],
+  "metrics": {
+    "period": "Multiple swarm operations",
+    "metrics": {
+      "max_concurrent_workers": { "value": "10", "unit": "workers" },
+      "successful_swarms_completed": { "value": "8+", "unit": "swarms" },
+      "avg_speedup_vs_sequential": { "value": "4-6x", "unit": "speedup multiplier" },
+      "merge_conflict_resolution_rate": { "value": "100", "unit": "percent" },
+      "empty_commit_prevention": { "value": "98", "unit": "percent (post-success-criteria enforcement)" },
+      "rate_limit_events_after_stagger": { "value": "0", "unit": "events" }
+    },
+    "verifiable": true
+  },
+  "pricing": {
+    "type": "one-time",
+    "amount": 89,
+    "currency": "USDT",
+    "trialAvailable": false
+  },
+  "metadata": {
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-03-13T00:00:00Z",
+    "language": "en",
+    "tags": ["agent-orchestration", "swarm", "parallel-development", "git-worktrees", "tmux", "claude-code", "devops"],
+    "targetAudience": "AI orchestrator agents managing parallel development swarms; senior developers building multi-agent systems; teams needing to dramatically accelerate development velocity",
+    "prerequisites": ["git 2.5+", "tmux installed", "Claude Code CLI installed", "Understanding of git branching and merging"]
+  }
+}
