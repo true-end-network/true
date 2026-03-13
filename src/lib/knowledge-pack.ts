@@ -105,12 +105,58 @@ export interface PackMetadata {
 }
 
 // ---------------------------------------------------------------------------
+// V2 — new sub-interfaces
+// ---------------------------------------------------------------------------
+
+export interface PlatformPresence {
+  platform: "x" | "instagram" | "tiktok" | "youtube" | "github" | "discord"
+  handle: string
+  followers?: number
+  verified: boolean
+  proofType: "api" | "screenshot" | "self_reported"
+}
+
+export interface Testimonial {
+  agentName: string
+  rating: number          // 1–5
+  comment: string
+  date: string
+  verified: boolean
+}
+
+export interface DeliveryConfig {
+  estimatedMinutes: number
+  prerequisites: string[]
+  difficultyLevel: "beginner" | "intermediate" | "advanced" | "expert"
+  format: "structured" | "interactive" | "workshop"
+  maxMenteesPerSession: number            // 1 for 1-on-1, more for group
+}
+
+export interface VerificationSection {
+  mentorPlatforms: PlatformPresence[]
+  totalExperience: string                 // e.g. "6 months operating @0xCVYH"
+  proofSummary: string                    // one-line credibility summary
+}
+
+export interface PreviewContent {
+  sampleSkill?: SkillEntry                // one skill shown for free
+  testimonials: Testimonial[]
+  demoVideo?: string                      // URL to demo/explainer video
+}
+
+export interface CompatibilitySpec {
+  platforms: ("openclaw" | "claude" | "chatgpt" | "custom")[]
+  minSdkVersion: string
+  requiredTools?: string[]                // tools the mentee needs
+}
+
+// ---------------------------------------------------------------------------
 // Root interface
 // ---------------------------------------------------------------------------
 
 export interface KnowledgePack {
   id: string                              // SHA-256 hash
-  version: string                         // semver
+  version: string                         // semver; use "2.0" for v2 packs
   mentor: MentorProfile
   category: SkillCategory
   title: string                           // e.g. "Social Media Mastery"
@@ -123,6 +169,12 @@ export interface KnowledgePack {
   metrics: MetricsProof
   pricing: Pricing
   metadata: PackMetadata
+
+  // V2 — optional for backward compatibility with v1 packs
+  delivery?: DeliveryConfig
+  verification?: VerificationSection
+  preview?: PreviewContent
+  compatibility?: CompatibilitySpec
 }
 
 // ---------------------------------------------------------------------------
@@ -130,15 +182,97 @@ export interface KnowledgePack {
 // ---------------------------------------------------------------------------
 
 const VALID_DIFFICULTIES = new Set(["beginner", "intermediate", "advanced"])
+const VALID_DELIVERY_DIFFICULTIES = new Set(["beginner", "intermediate", "advanced", "expert"])
 const VALID_PRICING_TYPES = new Set(["one-time", "subscription", "per-session"])
 const VALID_CURRENCIES = new Set(["USD", "USDT", "ETH", "SOL", "BRL"])
 const VALID_CATEGORIES = new Set(Object.values(SkillCategory))
+const VALID_PLATFORM_PRESENCE = new Set(["x", "instagram", "tiktok", "youtube", "github", "discord"])
+const VALID_PROOF_TYPES = new Set(["api", "screenshot", "self_reported"])
+const VALID_DELIVERY_FORMATS = new Set(["structured", "interactive", "workshop"])
+const VALID_COMPAT_PLATFORMS = new Set(["openclaw", "claude", "chatgpt", "custom"])
 
 function isString(v: unknown): v is string {
   return typeof v === "string"
 }
 function isObject(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === "object" && !Array.isArray(v)
+}
+
+function validatePlatformPresence(p: unknown): boolean {
+  if (!isObject(p)) return false
+  if (!VALID_PLATFORM_PRESENCE.has(p.platform as string)) return false
+  if (!isString(p.handle) || !p.handle) return false
+  if (p.followers !== undefined && typeof p.followers !== "number") return false
+  if (typeof p.verified !== "boolean") return false
+  if (!VALID_PROOF_TYPES.has(p.proofType as string)) return false
+  return true
+}
+
+function validateTestimonial(t: unknown): boolean {
+  if (!isObject(t)) return false
+  if (!isString(t.agentName) || !t.agentName) return false
+  if (typeof t.rating !== "number" || (t.rating as number) < 1 || (t.rating as number) > 5) return false
+  if (!isString(t.comment)) return false
+  if (!isString(t.date)) return false
+  if (typeof t.verified !== "boolean") return false
+  return true
+}
+
+function validateV2Fields(pack: Record<string, unknown>): boolean {
+  // delivery
+  if (pack.delivery !== undefined) {
+    if (!isObject(pack.delivery)) return false
+    const d = pack.delivery
+    if (typeof d.estimatedMinutes !== "number" || (d.estimatedMinutes as number) <= 0) return false
+    if (!Array.isArray(d.prerequisites)) return false
+    if (!VALID_DELIVERY_DIFFICULTIES.has(d.difficultyLevel as string)) return false
+    if (!VALID_DELIVERY_FORMATS.has(d.format as string)) return false
+    if (typeof d.maxMenteesPerSession !== "number" || (d.maxMenteesPerSession as number) < 1) return false
+  }
+
+  // verification
+  if (pack.verification !== undefined) {
+    if (!isObject(pack.verification)) return false
+    const v = pack.verification
+    if (!Array.isArray(v.mentorPlatforms)) return false
+    for (const p of v.mentorPlatforms as unknown[]) {
+      if (!validatePlatformPresence(p)) return false
+    }
+    if (!isString(v.totalExperience)) return false
+    if (!isString(v.proofSummary)) return false
+  }
+
+  // preview
+  if (pack.preview !== undefined) {
+    if (!isObject(pack.preview)) return false
+    const pr = pack.preview
+    if (pr.sampleSkill !== undefined) {
+      if (!isObject(pr.sampleSkill)) return false
+      const s = pr.sampleSkill
+      if (!isString(s.name) || !isString(s.category) || !isString(s.content)) return false
+      if (!VALID_DIFFICULTIES.has(s.difficulty as string)) return false
+      if (!Array.isArray(s.examples) || !Array.isArray(s.pitfalls)) return false
+    }
+    if (!Array.isArray(pr.testimonials)) return false
+    for (const t of pr.testimonials as unknown[]) {
+      if (!validateTestimonial(t)) return false
+    }
+    if (pr.demoVideo !== undefined && !isString(pr.demoVideo)) return false
+  }
+
+  // compatibility
+  if (pack.compatibility !== undefined) {
+    if (!isObject(pack.compatibility)) return false
+    const c = pack.compatibility
+    if (!Array.isArray(c.platforms)) return false
+    for (const p of c.platforms as unknown[]) {
+      if (!VALID_COMPAT_PLATFORMS.has(p as string)) return false
+    }
+    if (!isString(c.minSdkVersion)) return false
+    if (c.requiredTools !== undefined && !Array.isArray(c.requiredTools)) return false
+  }
+
+  return true
 }
 
 export function validateKnowledgePack(pack: unknown): pack is KnowledgePack {
@@ -211,11 +345,14 @@ export function validateKnowledgePack(pack: unknown): pack is KnowledgePack {
   if (!isString(md.targetAudience)) return false
   if (!Array.isArray(md.tags) || !Array.isArray(md.prerequisites)) return false
 
+  // V2 fields — optional but validated when present
+  if (!validateV2Fields(pack)) return false
+
   return true
 }
 
 // ---------------------------------------------------------------------------
-// Sanitization — strip potential secrets from all string fields
+// Sanitization — strip potential secrets and sensitive data from all string fields
 // ---------------------------------------------------------------------------
 
 const SECRET_PATTERNS: RegExp[] = [
@@ -236,6 +373,18 @@ const SECRET_PATTERNS: RegExp[] = [
   /(?:api[_-]?key|access[_-]?token|secret[_-]?key|private[_-]?key)\s*[:=]\s*["']?[\w\-.+=]{16,}["']?/gi,
   // Assignment patterns: PASSWORD=xxx, SECRET=xxx, TOKEN=xxx
   /\b(?:PASSWORD|PASSWD|SECRET|TOKEN|CREDENTIAL)\s*=\s*["']?\S+["']?/g,
+  // Internal/private URLs (localhost, 10.x, 172.16-31.x, 192.168.x, 127.x, *.internal, *.local)
+  /https?:\/\/(?:localhost|127\.\d+\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+|192\.168\.\d+\.\d+)(?::\d+)?[^\s]*/g,
+  /https?:\/\/[^\s]*\.(?:internal|local|intranet|corp|lan)(?::\d+)?[^\s]*/gi,
+  // Unix/Windows file paths (absolute)
+  /(?:^|\s)(?:\/(?:etc|var|home|root|usr|tmp|opt|srv|proc|sys|dev)\/[^\s,;'"]+)/g,
+  /[A-Za-z]:\\[^\s,;'"]+/g,
+  // IPv4 addresses (not in public-safe ranges — catches any bare IP)
+  /\b(?:\d{1,3}\.){3}\d{1,3}\b/g,
+  // Email addresses
+  /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,
+  // Private/internal endpoint patterns (e.g. api.internal-name.com/v1/private)
+  /https?:\/\/[^\s]*(?:private|internal|admin|staging|dev\.|localhost)[^\s]*/gi,
 ]
 
 function stripSecrets(value: string): string {
