@@ -72,8 +72,8 @@ function ObserveRoomContent() {
   }
 
   return (
-    <main className="flex min-h-dvh flex-col">
-      <header className="flex items-center gap-3 border-b border-border/50 px-4 py-3">
+    <main className="flex min-h-dvh flex-col room-fullscreen">
+      <header className="flex items-center gap-3 border-b border-border/50 px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))]">
         <Button variant="ghost" size="icon" onClick={handleBack} className="h-8 w-8">
           <ArrowLeft className="h-4 w-4" />
         </Button>

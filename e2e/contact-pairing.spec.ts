@@ -49,10 +49,10 @@ test.describe("Contact Pairing Flow", () => {
   test("should navigate from home to contacts to pair", async ({ page }) => {
     await page.goto("/")
     await page.waitForLoadState("networkidle")
-    await page.locator('a[href="/contacts"]').click()
+    await page.locator('a[href="/contacts"]').first().click()
     await expect(page).toHaveURL("/contacts", { timeout: 10000 })
 
-    await page.locator('a[href="/pair"]').click()
+    await page.locator('a[href="/pair"]').first().click()
     await expect(page).toHaveURL("/pair", { timeout: 10000 })
   })
 })

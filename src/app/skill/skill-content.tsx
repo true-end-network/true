@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react"
 export function SkillContent({ content }: { content: string }) {
   return (
     <main className="min-h-dvh bg-background text-foreground">
-      <nav className="sticky top-0 z-10 border-b border-border/50 bg-background/95 backdrop-blur">
+      <nav className="sticky top-0 z-10 border-b border-border/50 bg-background/95 backdrop-blur pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-6 py-3">
           <a href="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />

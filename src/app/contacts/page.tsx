@@ -6,7 +6,7 @@ import { ArrowLeft, UserPlus, Users, Calendar } from "lucide-react"
 
 export default function ContactsPage() {
   return (
-    <main className="flex min-h-dvh flex-col items-center px-4 py-12">
+    <main className="flex min-h-dvh flex-col items-center px-4 py-12 pt-[calc(3rem+env(safe-area-inset-top))]">
       <div className="w-full max-w-md space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/" className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted">

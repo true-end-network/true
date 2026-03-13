@@ -31,7 +31,7 @@ export default function PairPage() {
   if (!checked) return null
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
+    <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-12 pt-[calc(3rem+env(safe-area-inset-top))]">
       <div className="w-full max-w-md space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.push("/")}>

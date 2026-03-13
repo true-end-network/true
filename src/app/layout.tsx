@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { PWAProvider } from "@/components/pwa-provider"
+import { AppShell } from "@/components/app-shell"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -67,7 +68,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <TooltipProvider>
+          <AppShell>{children}</AppShell>
+        </TooltipProvider>
         <PWAProvider />
       </body>
     </html>
