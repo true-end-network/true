@@ -22,7 +22,7 @@ import type { PackListing, MentorSession, Review } from '../src/lib/marketplace-
 // Per-test fresh store via vi.resetModules() + dynamic import
 // ---------------------------------------------------------------------------
 
-let store: import('../src/lib/marketplace-store').default extends infer T ? T : never
+let store: import('../src/lib/marketplace-store').Store
 let hashSecret: (s: string) => string
 let checkRateLimit: (ip: string, limit?: number, windowMs?: number) => boolean
 

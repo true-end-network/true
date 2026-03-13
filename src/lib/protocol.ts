@@ -11,6 +11,7 @@ export interface Message {
   content: string
   agentName?: string
   metadata?: Record<string, unknown>
+  [key: string]: unknown
 }
 
 export interface CreateRoomPayload {

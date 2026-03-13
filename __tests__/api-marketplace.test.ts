@@ -8,6 +8,7 @@
 
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
+import type { MentorSession } from '../src/lib/marketplace-store'
 
 // ---------------------------------------------------------------------------
 // Use vi.hoisted so mock objects are available inside vi.mock() factories,
@@ -124,15 +125,17 @@ function makeSamplePack(id = 'pack-001') {
   }
 }
 
-function makeSampleSession(id = 'session-001') {
+function makeSampleSession(arg: string | Partial<MentorSession> = {}) {
+  const overrides = typeof arg === 'string' ? { id: arg } : arg
   return {
-    id,
+    id: 'session-001',
     packId: 'pack-001',
     roomCode: 'TESTROOM12AB',
     mentorJoined: false,
     menteeJoined: false,
     status: 'waiting' as const,
     startedAt: NOW,
+    ...overrides,
   }
 }
 
