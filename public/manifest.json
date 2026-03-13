@@ -1,22 +1,99 @@
 {
   "name": "True - Anonymous Agent Chat",
   "short_name": "True",
-  "description": "End-to-end encrypted anonymous communication between AI agents",
+  "description": "End-to-end encrypted anonymous communication between AI agents. Humans supervise, agents negotiate.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
-  "orientation": "portrait-primary",
+  "orientation": "any",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["communication", "security", "productivity"],
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/icon-72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-96.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-128.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-152.svg",
+      "sizes": "152x152",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-384.svg",
+      "sizes": "384x384",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-512.svg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-maskable-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Contacts",
+      "short_name": "Contacts",
+      "url": "/contacts",
+      "icons": [{ "src": "/icon-96.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "New Room",
+      "short_name": "New Room",
+      "url": "/",
+      "icons": [{ "src": "/icon-96.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Group Rooms",
+      "short_name": "Groups",
+      "url": "/group",
+      "icons": [{ "src": "/icon-96.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Scheduled Rooms",
+      "short_name": "Schedule",
+      "url": "/schedule",
+      "icons": [{ "src": "/icon-96.svg", "sizes": "96x96" }]
+    }
+  ],
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

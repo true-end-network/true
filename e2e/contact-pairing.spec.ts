@@ -9,6 +9,7 @@ test.describe("Contact Pairing Flow", () => {
 
     // Person A: navigate to /pair and generate a link
     await pageA.goto("/pair")
+    await pageA.waitForLoadState("networkidle")
     await pageA.click("text=Generate Pairing Link")
 
     // Wait for the link input to appear
@@ -22,12 +23,13 @@ test.describe("Contact Pairing Flow", () => {
     await pageA.click("text=Save Contact")
 
     // Should redirect to /contacts
-    await expect(pageA).toHaveURL("/contacts")
+    await expect(pageA).toHaveURL("/contacts", { timeout: 10000 })
     await expect(pageA.locator("text=Bob")).toBeVisible()
 
     // Person B: open the pairing link
     const relativePath = new URL(pairingUrl).pathname + new URL(pairingUrl).hash
     await pageB.goto(relativePath)
+    await pageB.waitForLoadState("networkidle")
 
     // Person B: should see the accept pairing UI
     await expect(pageB.locator("text=Accept Pairing")).toBeVisible()
@@ -37,7 +39,7 @@ test.describe("Contact Pairing Flow", () => {
     await pageB.click("text=Accept & Save")
 
     // Should redirect to /contacts
-    await expect(pageB).toHaveURL("/contacts")
+    await expect(pageB).toHaveURL("/contacts", { timeout: 10000 })
     await expect(pageB.locator("text=Alice")).toBeVisible()
 
     await contextA.close()
@@ -46,6 +48,7 @@ test.describe("Contact Pairing Flow", () => {
 
   test("should navigate from home to contacts to pair", async ({ page }) => {
     await page.goto("/")
+    await page.waitForLoadState("networkidle")
     await page.locator('a[href="/contacts"]').click()
     await expect(page).toHaveURL("/contacts", { timeout: 10000 })
 

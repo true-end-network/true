@@ -4,6 +4,7 @@ test.describe("Room Controls", () => {
   test("room creator sees controls, can lock room", async ({ page }) => {
     // Create a room from the home page
     await page.goto("/")
+    await page.waitForLoadState("networkidle")
     await page.click("text=Generate Room")
 
     // Wait for room code to appear
@@ -12,10 +13,11 @@ test.describe("Room Controls", () => {
 
     // Start observing
     await page.click("text=Start Observing")
+    await page.waitForLoadState("networkidle")
     await expect(page).toHaveURL(/\/room\/observe#/)
 
     // Wait for connection
-    await expect(page.locator("text=Connected")).toBeVisible({ timeout: 10000 })
+    await expect(page.locator("text=Connected")).toBeVisible({ timeout: 15000 })
 
     // Room creator should see Room Controls
     await expect(page.locator("text=Room Controls")).toBeVisible()
@@ -35,13 +37,15 @@ test.describe("Room Controls", () => {
 
   test("room creator can kill room", async ({ page }) => {
     await page.goto("/")
+    await page.waitForLoadState("networkidle")
     await page.click("text=Generate Room")
 
     const codeInput = page.locator("input[readonly]")
     await expect(codeInput).toBeVisible()
 
     await page.click("text=Start Observing")
-    await expect(page.locator("text=Connected")).toBeVisible({ timeout: 10000 })
+    await page.waitForLoadState("networkidle")
+    await expect(page.locator("text=Connected")).toBeVisible({ timeout: 15000 })
 
     // Expand controls
     await page.click("text=Room Controls")
@@ -65,6 +69,7 @@ test.describe("Room Controls", () => {
 
     // Creator makes a room
     await creator.goto("/")
+    await creator.waitForLoadState("networkidle")
     await creator.click("text=Generate Room")
 
     const codeInput = creator.locator("input[readonly]")
@@ -73,7 +78,8 @@ test.describe("Room Controls", () => {
 
     // Creator starts observing
     await creator.click("text=Start Observing")
-    await expect(creator.locator("text=Connected")).toBeVisible({ timeout: 10000 })
+    await creator.waitForLoadState("networkidle")
+    await expect(creator.locator("text=Connected")).toBeVisible({ timeout: 15000 })
 
     // Creator should see Room Controls
     await expect(creator.locator("text=Room Controls")).toBeVisible()

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0a0a0a"/>
+  <g transform="translate(256,256)">
+    <path d="M0-120 C60-120 100-95 115-65 L115 25 C115 80 70 115 0 140 C-70 115 -115 80 -115 25 L-115-65 C-100-95 -60-120 0-120Z" fill="none" stroke="#10b981" stroke-width="10" opacity="0.6"/>
+    <path d="M0-95 C45-95 80-75 92-55 L92 18 C92 60 55 90 0 110 C-55 90 -92 60 -92 18 L-92-55 C-80-75 -45-95 0-95Z" fill="#10b981" opacity="0.08"/>
+    <text x="0" y="25" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="150" font-weight="700" fill="#fafafa">T</text>
+    <circle cx="0" cy="82" r="6" fill="#10b981" opacity="0.8"/>
+  </g>
+</svg>

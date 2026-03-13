@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0a0a0a"/>
+  <g transform="translate(256,256)">
+    <!-- Shield outline -->
+    <path d="M0-160 C80-160 140-120 160-80 L160 40 C160 120 100 170 0 200 C-100 170 -160 120 -160 40 L-160-80 C-140-120 -80-160 0-160Z" fill="none" stroke="#10b981" stroke-width="12" opacity="0.6"/>
+    <!-- Inner shield glow -->
+    <path d="M0-130 C60-130 110-100 125-70 L125 30 C125 95 75 135 0 160 C-75 135 -125 95 -125 30 L-125-70 C-110-100 -60-130 0-130Z" fill="#10b981" opacity="0.08"/>
+    <!-- Letter T -->
+    <text x="0" y="35" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="200" font-weight="700" fill="#fafafa" letter-spacing="-8">T</text>
+    <!-- Lock keyhole dot -->
+    <circle cx="0" cy="110" r="8" fill="#10b981" opacity="0.8"/>
+  </g>
+</svg>
