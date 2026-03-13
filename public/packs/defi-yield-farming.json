@@ -1,0 +1,258 @@
+{
+  "id": "e1c8f5b2d9a6e3c0f7d4b1e8c5f2a9d6b3e0c7f4a1d8b5e2c9f6a3d0b7e4c1f8a5",
+  "version": "1.0.0",
+  "mentor": {
+    "name": "Major",
+    "platform": "True Academy",
+    "specialties": ["pool analysis", "impermanent loss calculation", "TVL monitoring", "risk assessment", "exit strategy design", "yield optimization across chains"],
+    "experience": "Active DeFi participation across 20+ protocols, 6+ months yield farming operation",
+    "resultsSnapshot": {
+      "protocols_actively_tracked": "50+",
+      "chains_monitored": "Ethereum, Arbitrum, Optimism, Base, Polygon, Solana",
+      "best_single_position_apy": "340% (short-term, high risk)",
+      "sustainable_avg_apy_target": "15-40% (medium risk)",
+      "rug_pulls_avoided": "3 (detected early warning signs)",
+      "il_miscalculation_events": "1 (documented in error log)"
+    }
+  },
+  "category": "defi",
+  "title": "DeFi Yield Farming: Strategy, Risk, and Systematic Execution",
+  "description": "Complete operational framework for DeFi yield farming across major chains and protocols. Covers LP pool selection methodology, impermanent loss calculation with concrete examples, TVL monitoring for protocol health, risk tiering system for position management, entry/exit strategy design, and rug pull detection. Based on 6+ months of active DeFi operation with documented wins and losses. Includes real risk management rules that prevent catastrophic loss while maximizing sustainable yield.",
+  "skills": [
+    {
+      "name": "Yield Pool Analysis — Finding Real Opportunities vs Traps",
+      "category": "defi",
+      "difficulty": "intermediate",
+      "content": "Not all APY numbers are created equal. A 1000% APY pool and a 15% APY pool can both be excellent or terrible depending on the underlying mechanics. Pool analysis is about separating genuine yield from unsustainable incentive programs designed to attract liquidity before protocol collapse.\n\n**The 5 Pool Quality Indicators:**\n\n**1. Fee Revenue vs Incentive Revenue Split**\nThe most important number is what percentage of the yield comes from actual trading fees vs protocol incentive tokens.\n- Fee-only yield: Most sustainable. The protocol is generating real economic value.\n- 90% fee + 10% incentive: Very good. Primary yield is organic.\n- 50% fee + 50% incentive: Acceptable if incentive token has strong fundamentals.\n- 10% fee + 90% incentive: Dangerous. Remove the incentive program and the pool becomes unattractive — mass exodus likely.\n- 100% incentive: Only for very short-term plays with clear exit plan before incentive period ends.\n\nData source: DeFi Llama's yield section shows fee APY vs total APY for most major pools.\n\n**2. TVL Stability and Trend**\nCheck TVL history over 30 and 90 days:\n- Stable TVL: Mature pool, existing LPs are satisfied with yield\n- Slowly growing TVL: Organic adoption — positive signal\n- Rapidly growing TVL: Could be incentive chasing; check when incentives end\n- Declining TVL: LPs are leaving. Find out why before entering.\n- TVL spike then decline: Classic 'farm and dump' pattern. Avoid.\n\n**3. Token Pair Volatility Correlation**\nFor standard AMM pools (x*y=k), impermanent loss is highest when the two tokens diverge in price. Pair types by IL risk:\n- Stablecoin/Stablecoin (USDC/USDT, DAI/USDC): Minimal IL, lowest risk\n- Stablecoin/Blue-chip (USDC/ETH, USDC/BTC): Moderate IL (15-30% in strong bull markets)\n- Blue-chip/Blue-chip (ETH/BTC, ETH/SOL): Lower correlation risk but both can go down together\n- Volatile/Volatile (ALTCOIN/ETH): Highest IL risk; need very high fee yield to compensate\n\n**4. Smart Contract Audit Status and Age**\nOlder audited contracts with high TVL are safer than new unaudited contracts.\n- Under 1 month old: High risk regardless of audits; bugs not yet discovered by market\n- 1-6 months old with audit: Medium risk; major bugs likely discovered but edge cases remain\n- 6+ months with multiple audits and high TVL: Lower risk; time + TVL = battle-tested\n\n**5. Team/Protocol Track Record**\nKnown teams with previous successful protocols have reputational skin in the game. Anonymous teams without history are higher risk. This is the most subjective indicator but often the most important — a team's behavior during past crises reveals their character.\n\n**Yield Calculator Framework:**\nActual net APY = (Pool APY) - (Impermanent Loss Annual Rate) - (Transaction costs annual rate) - (Smart contract risk premium you assign)\n\nTransaction costs: frequent reward harvesting on mainnet Ethereum can cost $20-50/harvest. If your position is $1,000 and you harvest weekly, gas alone is 8%+ of your principal annually.\nSolution: Use L2s (Arbitrum, Optimism, Base) for smaller positions where mainnet gas would eat all yield.",
+      "examples": [
+        "Pool selection example: Uniswap V3 USDC/ETH 0.05% fee pool. Fee APY at time of analysis: 8.2%. No incentive tokens. TVL: $180M, stable for 6 months. Audit: multiple Uniswap V3 audits, 2+ years live. IL risk: moderate (ETH price movement). Assessment: quality opportunity at 8.2% real yield with moderate risk.",
+        "Trap pool example: New protocol launching USDC/NEW_TOKEN pool with 900% APY. Analysis: fee APY 0.2%, incentive APY 899.8%. TVL $2.3M after 48 hours. Audit: none. Assessment: avoid. When incentive runs out in 2 weeks, LPs will exit, price of NEW_TOKEN will collapse, remaining LPs face double loss (IL + token value drop).",
+        "IL calculation practical example: Entered ETH/USDC at ETH=$2000 with $10,000 ($5K ETH + $5K USDC). ETH moves to $4000. IL: sqrt(price_ratio) formula gives IL of ~5.7%. Hold vs LP: holding the original $5K ETH would give $10,000 ETH value vs LP position's ~$14,142. IL cost: $1,858 in this example, offset by fees earned during the period."
+      ],
+      "pitfalls": [
+        "Looking only at headline APY without checking fee vs incentive split — 500% APY pools are often 498% incentive and 2% fee; remove the incentive and you have a 2% pool with high IL risk",
+        "Ignoring transaction costs for small positions — gas costs can exceed yield for positions under $5,000 on mainnet; use L2s or Solana for smaller capital",
+        "Not checking TVL trend — entering a declining TVL pool puts you in a shrinking liquidity pie with worse and worse pricing",
+        "Confusing APR and APY — many pools display APY (compound interest) not APR; if you don't auto-compound, your actual return is the lower APR number",
+        "Assuming stablecoin pairs have zero risk — even USDC/USDT pools have smart contract risk, peg deviation risk, and protocol exploit risk; 'lower risk' is not 'no risk'"
+      ]
+    },
+    {
+      "name": "Impermanent Loss — Full Calculation and Risk Management",
+      "category": "defi",
+      "difficulty": "advanced",
+      "content": "Impermanent Loss (IL) is the opportunity cost of providing liquidity compared to simply holding the same tokens. The word 'impermanent' is misleading — IL becomes permanent the moment you exit the position.\n\n**The Mathematical Foundation:**\nFor a standard x*y=k AMM (Uniswap V2 style), impermanent loss can be calculated precisely:\n\nIL = 2*sqrt(price_ratio) / (1 + price_ratio) - 1\n\nWhere price_ratio = new_price / initial_price\n\n**IL Lookup Table (memorize these):**\n| Price Change | IL |\n|---|---|\n| 1.25x (25% up) | 0.6% |\n| 1.5x (50% up) | 2.0% |\n| 2x (100% up) | 5.7% |\n| 3x (200% up) | 13.4% |\n| 4x (300% up) | 20.0% |\n| 5x (400% up) | 25.5% |\n| 10x (900% up) | 42.5% |\n| 0.5x (50% down) | 5.7% |\n| 0.25x (75% down) | 20.0% |\n\nKey insight: IL is symmetric — a 2x increase and a 50% decrease produce the same 5.7% IL. This is often counter-intuitive.\n\n**Concentrated Liquidity (Uniswap V3) IL Dynamics:**\nUniswap V3 amplifies both fee earning AND impermanent loss. With concentrated liquidity:\n- In range: IL is magnified by the concentration factor (can be 10-100x higher IL vs V2)\n- Out of range: position converts 100% to one token, no more fee earning, but IL stops increasing\n\nFor V3, the IL calculation changes based on your tick range. Simplified rule: narrow price ranges = higher fees when in range + much worse IL if price moves outside range. Wide ranges = lower fees (similar to V2) but lower IL risk.\n\n**IL Threshold for Entry:**\nCalculate: at what price point does my IL exceed my expected fee yield?\n\nExample: ETH/USDC pool earning 8% fee APY. If ETH does 2x, IL is 5.7%. If position duration is 6 months, fee income = 4%. Net outcome at 2x: 4% fees - 5.7% IL = -1.7% vs just holding. Break-even ETH move for this position: approximately 1.7x in 6 months.\n\nConclusion: Only enter ETH/USDC LP if you believe ETH will NOT 2x in your intended holding period. This is a judgment call — LP only makes sense when you believe the asset pair will be range-bound.\n\n**Hedging IL with Options:**\nAdvanced strategy: buy put options on the volatile asset in your LP pair to hedge downside IL. This has a cost (option premium) but caps IL exposure. Only viable for larger positions (>$50K) where option size justifies premium cost.\n\n**Concentrated Range Strategy:**\nFor V3 positions, the 'full range but active management' approach:\n1. Start with a wide range (+/- 30% of current price)\n2. Monitor: if price approaches edge of range, exit and re-enter centered at new price\n3. Re-centering cost: 0.5-1% in gas and spread for a typical mainnet position\n4. When to re-center: when price has moved more than 20% from entry center\n\n**IL Tracking:**\nUse APY.vision or Revert Finance to track real-time IL vs fee income for your positions. These tools show your actual P&L accounting for IL, which most portfolio trackers miss.",
+      "examples": [
+        "Practical IL calculation: SOL/USDC pool at SOL=$100, $20,000 position (10,000 USDC + 100 SOL). SOL moves to $200. IL = 2*sqrt(2)/(1+2)-1 = 5.7%. IL cost: $1,140. Fees earned over this period: need at least $1,140 to break even vs just holding.",
+        "V3 concentrated range decision: ETH at $2000, entering V3 ETH/USDC at range $1600-$2500. If ETH hits $2500, position goes entirely to USDC (no more fee earning). If ETH hits $1600, position goes entirely to ETH. Chosen range reflects view that ETH will stay in this band for the 3-month target period.",
+        "IL miscalculation that lost money: entered AVAX/USDC pool believing AVAX would be range-bound. AVAX went 4x in 6 weeks. IL was 20%. Fees earned: 12% annualized = 2.3% in 6 weeks. Net loss vs holding: -17.7%. Lesson: concentrated asset exposure in bull market = hold, not LP."
+      ],
+      "pitfalls": [
+        "Thinking IL only applies on the downside — IL is identical for a 2x increase as a 50% decrease; bull market LPs also suffer IL",
+        "Not calculating break-even price move before entering — you must know at what price IL exceeds fees before entering any position",
+        "Using annual APY to estimate fees without adjusting for your intended holding period — 8% APY / 12 = 0.67% monthly fee income; IL of 5.7% from a 2x move cannot be covered by one month of fees",
+        "Ignoring V3 range selection — treating V3 like V2 by using 'full range' misses all the concentrated liquidity benefits and gives you V2-level fees with extra complexity",
+        "Not tracking real P&L with IL included — standard portfolio trackers show token value but not IL cost; you may think you're up when you're actually down"
+      ]
+    },
+    {
+      "name": "TVL Monitoring for Protocol Health Assessment",
+      "category": "defi",
+      "difficulty": "intermediate",
+      "content": "TVL (Total Value Locked) monitoring is the single most important signal for protocol health in DeFi. Movements in TVL precede almost all major protocol events: exploits, rug pulls, market narrative shifts, and protocol maturation.\n\n**TVL Monitoring Setup:**\n\n**Primary Tool: DeFi Llama**\nURL: defillama.com\nData freshness: Updates every 10-15 minutes for most protocols\nKey sections:\n- Protocol page: historical TVL chart, breakdown by chain\n- Yields section: current APY by pool with TVL context\n- Raises section: protocols that recently raised funding (institutional interest signal)\n\n**DeFi Llama API for Programmatic Monitoring:**\n```\nGET https://api.llama.fi/tvl/{protocol-slug}\n→ Returns current TVL in USD\n\nGET https://api.llama.fi/protocol/{protocol-slug}\n→ Returns full protocol data including historical TVL, chain breakdown\n\nGET https://api.llama.fi/protocols\n→ Returns all tracked protocols (cache this daily)\n```\n\n**TVL Alert Thresholds:**\n\n**Normal variation (ignore):**\n- ±3% in 24 hours during normal market conditions\n- TVL rises/falls proportionally with the underlying token prices (e.g., if ETH price drops 5%, ETH-denominated TVL drops even if no users left)\n\n**Important signal (investigate):**\n- ±10% in 24 hours unexplained by price movements\n- TVL declining in USD but increasing in token terms (sophisticated users leaving, retail replacing)\n- TVL concentrated in single large depositor (whale risk)\n\n**Critical alert (action required):**\n- -15% or more in any 4-hour window\n- -30% in 24 hours\n- Rapid sequential large withdrawals visible on Etherscan\n\n**TVL in Token Terms vs USD Terms:**\nAlways check both. A protocol showing '$1B TVL' when ETH is at $4000 could drop to '$500M TVL' when ETH halves to $2000 — same number of ETH deposited, half the USD value. This is not a protocol health issue; it's a market price issue.\n\nFormula: TVL_token_adjusted = TVL_USD / (token_price / base_token_price)\n\nFor protocol health, track TVL in token terms more than USD terms. If ETH-denominated TVL is declining even while ETH price is rising, that's a real protocol exodus signal.\n\n**Protocol Comparison Analysis:**\nFor any protocol you're evaluating, compare its TVL trend against:\n1. Category peers (lending vs lending, DEX vs DEX)\n2. Chain peers (Arbitrum protocols vs Arbitrum peers)\n\nA protocol losing TVL while peers are gaining TVL signals competitive disadvantage or protocol-specific issue. Context is everything.\n\n**TVL Composition Analysis:**\nFor multi-asset protocols (lending platforms like Aave, Compound), check TVL breakdown:\n- Stablecoin TVL proportion: Higher stablecoin % = more stable TVL in price drawdowns\n- ETH/BTC TVL proportion: Subject to market swings\n- Altcoin TVL proportion: Most volatile, most likely to exit during risk-off\n\nWhen overall crypto market drops >20%, expect 30-40% TVL drop in altcoin-heavy protocols, only 10-15% in stablecoin-heavy protocols.",
+      "examples": [
+        "TVL exit detection: monitoring Aave V3 on Polygon, TVL dropped 23% in 4 hours while ETH price was flat. Investigation: large whale (attributed to known hedge fund on Arkham) withdrew $45M. Not a security event, but whale concentration exit. Reduced own exposure by 50% as precaution. Protocol stabilized within 48 hours.",
+        "TVL-in-token-terms insight: Curve Finance TVL fell from $20B to $8B in USD during 2022 bear market. Token-terms TVL (CRV-denominated) only fell 15%. Same number of users, same number of tokens locked — the USD number is misleading. Protocol was actually gaining users during the period.",
+        "Protocol comparison analysis: DEX A losing 30% TVL while DEX B and C (same chain) gained 15% each. Root cause: DEX A's fee split unfavorable for LPs vs competitors. This competitive disadvantage was confirmed 2 months later when DEX A changed their fee structure."
+      ],
+      "pitfalls": [
+        "Treating USD-denominated TVL as the only relevant number — always check token-denominated TVL to separate price effects from actual user behavior",
+        "Reacting to every 5% daily TVL fluctuation — normal market noise; only significant deviations in context of price movements matter",
+        "Not checking TVL composition for multi-asset protocols — high stablecoin TVL proportion is fundamentally more stable than high altcoin TVL proportion",
+        "Using TVL as a quality signal without checking fee revenue — high TVL with low fee revenue often means mercenary capital chasing incentives, not organic adoption",
+        "Single-snapshot TVL assessment — always look at 30-day and 90-day trend, not just current value"
+      ]
+    },
+    {
+      "name": "Rug Pull Detection — Early Warning Signs",
+      "category": "defi",
+      "difficulty": "advanced",
+      "content": "Rug pulls follow predictable patterns. The signals are almost always present before the event — the challenge is knowing which signals matter and acting on them before the exit.\n\n**Definition Clarity:**\n'Rug pull' encompasses several distinct failure modes:\n1. **Hard rug**: Dev team steals funds directly (requires contract ownership or upgradeable contracts)\n2. **Soft rug**: Dev team sells all tokens, causing price collapse (no direct theft but same outcome for LPs)\n3. **Exit scam**: Team gradually withdraws developer allocations over time\n4. **Incentive rug**: No explicit theft, but unsustainable incentive program ends abruptly, causing mass exodus and price collapse\n\n**Pre-Launch Red Flags:**\n- Anonymous team with no prior verifiable on-chain history\n- No public audit by a reputable firm (Trail of Bits, OpenZeppelin, Quantstamp, Certik with clean report)\n- Presale or early investor allocation >30% of total supply (exit bags are pre-positioned)\n- Short or no vesting period on team/investor tokens\n- Whitepaper that describes mechanics but not team background\n- Unrealistic yield promises (1000%+ APY 'forever')\n\n**Post-Launch Warning Signals:**\n\n**On-chain signals (Etherscan/Arkham):**\n- Team wallet receiving large token allocations that weren't in original tokenomics\n- Large token transfers from team wallets to exchanges (preparing to sell)\n- Deployer address interacting with protocol contracts in unusual ways\n- Mint function calls on token contract creating new supply (inflation risk or rug preparation)\n\n**Off-chain signals:**\n- Team members removing themselves from LinkedIn/Twitter\n- Telegram/Discord channels becoming less active or moderators leaving\n- Vague responses to technical questions in community channels\n- Roadmap dates repeatedly missed without explanation\n- Suspiciously similar language/code to previous failed/rugged projects\n\n**Smart Contract Risk Signals:**\n- Upgradeable contracts: team can change contract behavior without timelock\n- No timelock on admin functions: team can drain funds instantly without delay\n- Privileged functions without multisig: single key controls critical functions\n- Self-destruct capability: contract can be deleted, locking or destroying funds\n- Unlimited mint function: team can inflate token supply indefinitely\n\n**The 48-Hour Rule:**\nNever enter a new protocol in the first 48 hours of launch. This window is when:\n1. Initial testing reveals smart contract bugs\n2. Arbitrage bots drain mispriced pools\n3. Pre-positioned insiders sell initial supply into first-buyers\n4. The team has maximum leverage if they're going to rug\n\nWaiting 48 hours costs you the highest APY window but saves you from the highest risk window.\n\n**On-Chain Verification Checklist:**\n```\nBefore any new protocol deposit:\n[ ] Contract verified on Etherscan (source code visible)\n[ ] Audit link in project docs leads to real audit report\n[ ] Token distribution: team allocation <20%, vesting >1 year\n[ ] Privileged functions: check for timelock on admin actions\n[ ] No unusual recent transactions from deployer address\n[ ] TVL growth is organic (not single whale)\n[ ] Protocol age: >2 weeks minimum, >3 months preferred\n```",
+      "examples": [
+        "Rug pull avoided case 1: New yield optimizer protocol launched with 400% APY. Red flags: anonymous team, no audit, presale allocation 45% to 'advisors'. Analysis complete: all three critical red flags. Avoided. Protocol rugged 3 weeks later — team walked with $2.8M.",
+        "Rug pull avoided case 2: Established protocol launching a new pool. Team well-known, but new pool used an upgradeable proxy contract with no timelock. Upgraded proxy could have allowed instant fund drain. Avoided the new pool while continuing participation in the audited original pools.",
+        "Soft rug survived with minimal loss: Farming protocol with 180% APY. Entered $5,000 position. Noticed team wallet starting to sell on-chain after week 2. Exited immediately with $200 profit. Three weeks later APY incentives ended, token price collapsed 90%, TVL dropped 85%. The on-chain sell signal gave 2-week early warning."
+      ],
+      "pitfalls": [
+        "Letting high APY override risk analysis — the protocols with the highest APY have the highest rug pull rates by definition; the correlation is not accidental",
+        "Trusting 'audit' badges without reading the audit report — some audit firms produce reports that give a clean bill of health to obviously flawed contracts; always read the executive summary",
+        "Ignoring team allocation and vesting schedules — a team with 40% of supply and no lockup has immediate economic incentive to rug at any price above their mint cost",
+        "FOMO causing premature entry into new protocols — the first 48-72 hours are maximum risk; the 1000% APY in that window is mostly risk premium, not value",
+        "Treating established protocol status as permanent — Euler Finance had 2 years of excellent operation before the 2023 exploit; security status requires ongoing monitoring, not a one-time assessment"
+      ]
+    },
+    {
+      "name": "Exit Strategy Design — Knowing When and How to Leave",
+      "category": "defi",
+      "difficulty": "intermediate",
+      "content": "Entry strategy in DeFi gets all the attention; exit strategy is what determines whether you actually profit. A well-designed exit has criteria defined before entry — not reactive decisions made under market stress.\n\n**The 4 Exit Triggers (define all 4 before entering any position):**\n\n**1. Profit Target Exit**\nDefinition: Exit when accumulated fees + price appreciation reach a target return\nExample: 'Exit when position P&L (fees minus IL) reaches +20% from entry'\nImplementation: Set up APY.vision monitoring with target alerts. Check weekly.\nWhy to define this before entry: Without a profit target, greed keeps you in longer than rational analysis supports\n\n**2. Loss Limit Exit**\nDefinition: Exit when accumulated IL + any token loss reaches a maximum drawdown threshold\nExample: 'Exit if position is down >15% net of fees'\nImplementation: Calculate the price move that triggers this. 15% drawdown on an ETH position = ETH approximately 4x from entry\nWhy to define before entry: Without a stop loss, denial during drawdowns leads to catastrophic losses\n\n**3. Protocol Health Exit**\nDefinition: Exit when defined protocol health metrics breach thresholds\nExample triggers:\n- TVL drops >20% in 48 hours for non-market reasons\n- Team wallet sells >5% of their allocation in a week\n- Audit firm removes protocol from their portfolio/recommendations\n- Governance attack or unusual governance vote\n\n**4. Opportunity Cost Exit**\nDefinition: Exit when a clearly superior risk-adjusted yield opportunity exists elsewhere and your capital is needed\nExample: 'Exit if a lower-risk pool offers same APY for 3+ consecutive weeks'\nThis prevents portfolio ossification — the tendency to hold positions that no longer have the best risk-adjusted return in the universe of options\n\n**Exit Mechanics — Minimizing Cost:**\n\n**Timing exits to minimize gas and slippage:**\n- Exit during low gas periods (typically 02:00-06:00 UTC on Ethereum mainnet)\n- For large positions: exit in tranches (30-40% per transaction) to minimize price impact on thin liquidity pools\n- Avoid exiting during market volatility peaks — gas prices spike 5-10x during high-volatility periods\n\n**Partial vs Full Exit:**\nConsider partial exits when:\n- Profit target reached but fundamentals remain strong — take 50%, let rest ride\n- Protocol health signals ambiguous — reduce by 30-50%, wait for clarity\n- Gas fees make full exit expensive — exit the minimum that reaches your objective\n\n**Tax-Efficient Exits:**\nIn jurisdictions where DeFi farming income is taxable:\n- Each harvest = taxable event in most jurisdictions\n- Long-term capital gains treatment (if >1 year hold) applies to the original token amount\n- IL itself may not be directly deductible — consult tax professional for your jurisdiction\n- Strategy: compound inside the pool as long as possible to defer taxable events; auto-compound vaults handle this automatically\n\n**Emergency Exit Procedure:**\nFor exploit suspicion or TVL crash in progress:\n1. Initiate withdrawal transaction immediately — do not wait for confirmation of exploit\n2. Set gas to 'fast' or use private mempool (Flashbots Protect) to prevent sandwich attacks\n3. Do not try to harvest rewards while withdrawing — prioritize capital safety over yield\n4. If pool is depleted and normal withdrawal fails: check for emergency withdrawal function in contract\n5. Withdraw to cold wallet, not exchange — exchanges may freeze withdrawals during protocol crisis",
+      "examples": [
+        "Successful pre-defined exit: ETH/USDC position with 20% profit target exit. ETH moved 1.5x, fees accumulated, hit +20% target at week 8. Exited entire position per pre-defined criteria. ETH continued to move, but the decision was made before entry and executed mechanically — no FOMO, no regret, clean exit.",
+        "Protocol health exit saved capital: Monitoring caught TVL dropping 18% in 36 hours on Arbitrum lending protocol. No corresponding market drop. Protocol health exit triggered. Exited. 6 hours later, exploit confirmed — remaining LPs lost 40%.",
+        "Emergency exit during exploit: Received Telegram alert about potential exploit in monitored protocol at 02:30 UTC. Initiated withdrawal immediately. Gas set to 'fast'. Transaction confirmed in 45 seconds. Protocol was confirmed exploited 8 minutes later. Emergency procedure worked — all capital recovered."
+      ],
+      "pitfalls": [
+        "Not defining exit criteria before entering — decisions made under stress or during drawdowns are almost always worse than pre-committed rules",
+        "Making partial exits with too-small tranches — exiting 5% per day from a declining position is 'hope and prayer' exit strategy; commit to meaningful tranches",
+        "Prioritizing reward harvest during emergency exit — in an active exploit, every second counts for capital preservation; rewards are worthless if protocol goes to zero",
+        "Using market orders on thin liquidity pools during exit — DEX market orders have no slippage protection; use limit orders with acceptable slippage on large positions",
+        "Forgetting about pending rewards in multi-step withdrawals — some protocols have separate claim steps; leaving unclaimed rewards in an exploited protocol means losing them"
+      ]
+    }
+  ],
+  "errorLog": [
+    {
+      "date": "2024-11-25",
+      "description": "Entered an ETH/ALTCOIN LP position without calculating break-even IL. ETH went 3x and ALTCOIN went 10x — massive IL.",
+      "impact": "Position had 35% IL. Fee income was 18% APY for 2 months = 3%. Net loss vs holding: -32%. Holding the same tokens would have been 400% better return.",
+      "fix": "Exited position. Implemented mandatory IL break-even calculation for all LP entries.",
+      "lesson": "Before entering any LP position with a volatile asset pair, calculate: 'At what price multiple does my IL exceed my projected fee income?' If the answer is '2x' and the asset could easily 2x, do not enter. Hold instead. LP is for range-bound assets; holding is for trending assets."
+    },
+    {
+      "date": "2024-12-15",
+      "description": "Entered a protocol that had passed the '48-hour rule' but failed to check the team token allocation. Team held 52% of supply with only 6-month vest.",
+      "impact": "Team began unlocking and selling at month 4. Price dropped 70% before full exit. Final loss: 45% of position value.",
+      "fix": "Added mandatory tokenomics check to pre-entry checklist. Team allocation >25% with vest <1 year is now an automatic disqualifier.",
+      "lesson": "Protocol age and audit status are necessary but not sufficient. Tokenomics — specifically team allocation percentage and vesting schedule — must be verified for every new protocol entry. A team with 50% supply and 6-month vest has a built-in incentive to exit at month 6."
+    },
+    {
+      "date": "2025-01-30",
+      "description": "Harvested rewards manually every week from a mainnet Ethereum position, not accounting for gas costs",
+      "impact": "Over 3 months: 12 harvest transactions at $35 average gas = $420 in gas fees. Position size: $8,000. Gas fees consumed 5.25% of principal annually — more than half the pool's fee APY.",
+      "fix": "Moved position to Arbitrum equivalent pool. Same protocol, 95% lower gas costs. Switched to auto-compounding vault for the mainnet portion.",
+      "lesson": "For positions under $20,000 on Ethereum mainnet, gas costs often negate yield. Rule: (Annual fee APY) * (Position size) must be > 5x (Annual harvest gas cost) for the position to make economic sense on mainnet. Under this threshold: use L2s (Arbitrum, Optimism, Base) or auto-compound vaults."
+    },
+    {
+      "date": "2025-02-18",
+      "description": "Relied on a Telegram group's 'alpha call' to enter a new protocol without performing own due diligence",
+      "impact": "The Telegram group's promotion was an exit liquidity play — they needed buyers to exit their own pre-launch positions. Lost 60% of the position value in 2 weeks as insiders sold.",
+      "fix": "Implemented 'no alpha calls' rule: never enter a position based on external recommendations without completing own 5-point checklist.",
+      "lesson": "Every Telegram 'alpha call' has a sender with a motivation. That motivation may be genuinely helpful — or it may be 'I need exit liquidity'. Always verify: does the protocol pass my own 5-point checklist? If yes: enter. If no or unknown: skip, regardless of source."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "New Position Evaluation Protocol",
+      "description": "Complete due diligence workflow before entering any new DeFi yield farming position",
+      "triggers": [
+        "New protocol identified through DeFi Llama trending",
+        "Alpha call or recommendation for a yield opportunity",
+        "Portfolio rebalancing decision to redeploy capital",
+        "Existing position exits freeing capital"
+      ],
+      "steps": [
+        { "step": 1, "action": "Check DeFi Llama for protocol TVL, fee APY vs incentive APY split, and TVL trend over 30 days", "notes": "Reject if: TVL declining, incentive APY >80% of total APY, TVL history <2 months" },
+        { "step": 2, "action": "Check protocol age and audit status", "notes": "Minimum: 2 weeks live, at least one audit from reputable firm. Preferred: 3+ months, multiple audits." },
+        { "step": 3, "action": "Check tokenomics: team allocation %, vesting schedule, circulating vs total supply", "notes": "Reject if: team allocation >25% AND vest <12 months" },
+        { "step": 4, "action": "Calculate IL break-even: at what price multiple does IL exceed projected fee income?", "notes": "If break-even is below likely price range for the holding period: this is a holding, not an LP opportunity" },
+        { "step": 5, "action": "Check on-chain for recent team wallet activity (Arkham or Etherscan)", "notes": "Large recent team sells = exit liquidity trap. Recent team buys = aligned incentive." },
+        { "step": 6, "action": "Calculate transaction cost impact: (gas cost per harvest * harvests per year) / position size", "notes": "If >5% of projected APY: use auto-compound vault or consider L2 deployment" },
+        { "step": 7, "action": "Define all 4 exit triggers before entering: profit target, loss limit, protocol health threshold, opportunity cost trigger", "notes": "Write these down. This step prevents emotional decisions during the position lifecycle." },
+        { "step": 8, "action": "Set position size based on risk tier", "notes": "Tier 1 (high trust): up to 30% of portfolio. Tier 2 (medium): up to 15%. Tier 3 (new/unproven): maximum 5%." }
+      ]
+    },
+    {
+      "name": "Active Position Monitoring Cycle",
+      "description": "Regular monitoring workflow for all open positions to catch exit signals early",
+      "triggers": [
+        "Every 72 hours during normal market conditions",
+        "Any single asset >10% price move affecting your positions",
+        "Any TVL alert from DeFi Llama for your monitored protocols"
+      ],
+      "steps": [
+        { "step": 1, "action": "Check current P&L vs entry for all positions using APY.vision or Revert Finance", "notes": "Compare current net position (fees minus IL) against profit target and loss limit thresholds" },
+        { "step": 2, "action": "Check TVL trend for each position's protocol over last 72 hours", "notes": "TVL drop >10% in 72 hours: investigate cause. Drop >20%: evaluate protocol health exit trigger." },
+        { "step": 3, "action": "Check fee APY trend — is the pool still generating similar fees to when you entered?", "notes": "APY dropping >40% from entry: reassess position. Cheaper alternatives may have emerged." },
+        { "step": 4, "action": "Review any protocol governance proposals or security announcements", "notes": "Critical contract upgrades, team wallet changes, or emergency governance votes warrant immediate attention" },
+        { "step": 5, "action": "Compare current opportunity against current position risk-adjusted yield", "notes": "If better risk-adjusted yield available elsewhere: plan opportunity cost exit" }
+      ]
+    }
+  ],
+  "toolConfigs": [
+    {
+      "name": "DeFi Llama",
+      "purpose": "TVL monitoring, yield discovery, protocol analytics across all major chains",
+      "setupSteps": [
+        "No installation needed — web interface at defillama.com",
+        "API: https://api.llama.fi/ (no key required)",
+        "Set up bookmarks: defillama.com/yields?chain=Ethereum, defillama.com/yields?chain=Arbitrum"
+      ],
+      "configuration": {
+        "api_base": "https://api.llama.fi",
+        "yields_api": "https://yields.llama.fi/pools",
+        "tvl_endpoint": "/tvl/{protocol-slug}",
+        "preferred_filters": "minTvl=10000000,audited=true"
+      },
+      "notes": "The yields endpoint returns APY broken down into base (fee) APY and reward APY — this is the most important distinction for evaluating pool sustainability. Filter by minTvl to avoid pools too small to provide meaningful data."
+    },
+    {
+      "name": "APY.vision",
+      "purpose": "Track real P&L of LP positions including impermanent loss calculation",
+      "setupSteps": [
+        "Web app at apy.vision",
+        "Connect wallet for automatic position detection",
+        "Supports Uniswap V2/V3, Sushiswap, Curve, Balancer, and more"
+      ],
+      "configuration": {
+        "update_frequency": "Every 15 minutes",
+        "il_calculation": "Automated using entry price + current price",
+        "fee_tracking": "Cumulative fees earned in USD"
+      },
+      "notes": "APY.vision shows the true P&L of LP positions that most wallets/trackers miss. Essential for comparing 'LP vs hold' outcomes. The IL dashboard is the most valuable view — it makes IL concrete rather than theoretical."
+    }
+  ],
+  "templates": [
+    {
+      "name": "Position Entry Checklist",
+      "category": "risk-management",
+      "content": "PROTOCOL: {PROTOCOL_NAME}\nChain: {CHAIN}\nPool: {POOL_PAIR}\nEntry Date: {ENTRY_DATE}\n\nDUE DILIGENCE:\n[ ] Protocol age: {PROTOCOL_AGE} (min 2 weeks)\n[ ] Audit: {AUDIT_STATUS} by {AUDITOR}\n[ ] Fee APY: {FEE_APY}% | Incentive APY: {INCENTIVE_APY}%\n[ ] TVL: ${TVL} | 30-day trend: {TVL_TREND}\n[ ] Team allocation: {TEAM_PCT}% | Vest: {VEST_PERIOD}\n[ ] IL break-even: {IL_BREAKEVEN}x price move\n[ ] Gas cost annual: {GAS_ANNUAL_PCT}% of projected yield\n\nEXIT TRIGGERS (define before entering):\nProfit target: {PROFIT_TARGET}%\nLoss limit: {LOSS_LIMIT}%\nProtocol health trigger: TVL drop >{TVL_DROP_THRESHOLD}% in 48h\nOpportunity cost trigger: {OPP_COST_TRIGGER}\n\nPOSITION SIZE: ${POSITION_SIZE} ({PORTFOLIO_PCT}% of portfolio)\nRisk tier: {RISK_TIER} (1=high trust, 2=medium, 3=new/unproven)",
+      "variables": ["PROTOCOL_NAME", "CHAIN", "POOL_PAIR", "ENTRY_DATE", "PROTOCOL_AGE", "AUDIT_STATUS", "AUDITOR", "FEE_APY", "INCENTIVE_APY", "TVL", "TVL_TREND", "TEAM_PCT", "VEST_PERIOD", "IL_BREAKEVEN", "GAS_ANNUAL_PCT", "PROFIT_TARGET", "LOSS_LIMIT", "TVL_DROP_THRESHOLD", "OPP_COST_TRIGGER", "POSITION_SIZE", "PORTFOLIO_PCT", "RISK_TIER"],
+      "usage": "Complete before every position entry. Archive completed checklists for post-mortem analysis. The exit trigger section is the most important — define these while you're rational, not while the position is moving."
+    },
+    {
+      "name": "IL Calculation Worksheet",
+      "category": "risk-management",
+      "content": "IMPERMANENT LOSS CALCULATION\n\nPool: {POOL_PAIR} | AMM Type: {AMM_TYPE}\nEntry price ratio: {ENTRY_PRICE_RATIO}\n\nScenario Analysis:\n| Price Multiple | IL % | Fee Income Needed to Break Even |\n|---|---|---|\n| 1.5x | 2.0% | {FEE_FOR_1_5X}% |\n| 2.0x | 5.7% | {FEE_FOR_2X}% |\n| 3.0x | 13.4% | {FEE_FOR_3X}% |\n| 0.5x | 5.7% | {FEE_FOR_0_5X}% |\n\nProjected fee income for holding period ({HOLDING_PERIOD_DAYS} days):\nFee APY: {FEE_APY}% × ({HOLDING_PERIOD_DAYS}/365) = {PROJECTED_FEE_PCT}%\n\nBreak-even price move: {BREAKEVEN_PRICE_MOVE}x\n\nConclusion: LP is favorable if price moves less than {BREAKEVEN_PRICE_MOVE}x in {HOLDING_PERIOD_DAYS} days\nConclusion: Hold is favorable if you expect >  {BREAKEVEN_PRICE_MOVE}x move in {HOLDING_PERIOD_DAYS} days",
+      "variables": ["POOL_PAIR", "AMM_TYPE", "ENTRY_PRICE_RATIO", "FEE_FOR_1_5X", "FEE_FOR_2X", "FEE_FOR_3X", "FEE_FOR_0_5X", "HOLDING_PERIOD_DAYS", "FEE_APY", "PROJECTED_FEE_PCT", "BREAKEVEN_PRICE_MOVE"],
+      "usage": "Complete for any volatile asset pair LP before entry. The breakeven price move is the key output — it answers 'under what conditions does this LP position make sense vs just holding?'"
+    }
+  ],
+  "metrics": {
+    "period": "6+ months active DeFi yield farming",
+    "metrics": {
+      "protocols_tracked": { "value": "50+", "unit": "protocols" },
+      "chains_active": { "value": "6", "unit": "chains" },
+      "rug_pulls_avoided": { "value": "3", "unit": "events detected pre-rug" },
+      "average_sustainable_apy": { "value": "15-40", "unit": "percent (medium risk tier)" },
+      "best_position_outcome": { "value": "180", "unit": "percent net gain (including fees minus IL)" },
+      "worst_position_outcome": { "value": "-45", "unit": "percent (pre-checklist implementation)" },
+      "il_miscalculation_events": { "value": "1", "unit": "documented (post-analysis)"},
+      "gas_cost_optimization_savings": { "value": "60", "unit": "percent reduction after L2 migration" }
+    },
+    "verifiable": true
+  },
+  "pricing": {
+    "type": "one-time",
+    "amount": 69,
+    "currency": "USDT",
+    "trialAvailable": true
+  },
+  "metadata": {
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-03-13T00:00:00Z",
+    "language": "en",
+    "tags": ["defi", "yield-farming", "liquidity-providing", "impermanent-loss", "tvl", "risk-management", "rug-pull"],
+    "targetAudience": "AI agents and individuals managing DeFi yield farming positions who want a systematic approach to pool selection, risk assessment, and position management across multiple chains",
+    "prerequisites": ["Basic understanding of DeFi concepts (AMM, liquidity pools, APY)", "Access to at least one non-custodial wallet", "Some initial capital for testing (minimum $500 recommended for meaningful positions on L2s)"]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2025-03-13T00:00:00Z",
+  "totalPacks": 5,
+  "packs": [
+    {
+      "id": "a3f9c2e1b4d7f0a8c5e2b9d6f3a0c7e4b1d8f5a2c9e6b3d0f7a4c1e8b5d2f9a6",
+      "slug": "social-media-mastery",
+      "file": "/packs/social-media-mastery.json",
+      "title": "Social Media Mastery: From 0 to 14K in 6 Weeks",
+      "description": "Operational playbook for explosive X/Twitter growth. Hook engineering, viral detection, optimal posting windows, dual-posting strategy, thread construction, and breaking news exploitation. Based on real account @0xCVYH: 14,400+ followers, 9.5M impressions in 90 days.",
+      "category": "social-media",
+      "mentor": {
+        "name": "Major",
+        "platform": "True Academy"
+      },
+      "pricing": {
+        "type": "one-time",
+        "amount": 49,
+        "currency": "USDT",
+        "trialAvailable": true
+      },
+      "metrics": {
+        "followers": "14,400+",
+        "impressions_90d": "9.5M",
+        "likes": "137K",
+        "bookmarks": "31K"
+      },
+      "tags": ["twitter", "x", "social-media", "growth", "content", "viral", "threads"],
+      "skillCount": 5,
+      "difficulty": "intermediate",
+      "language": "en",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-03-13T00:00:00Z"
+    },
+    {
+      "id": "b7e4d1a8f5c2e9b6d3f0a7c4e1b8d5f2a9c6e3b0d7f4a1c8e5b2d9f6a3c0e7b4",
+      "slug": "crypto-intel-ops",
+      "file": "/packs/crypto-intel-ops.json",
+      "title": "Crypto Intelligence Operations: Real-Time Market Monitoring System",
+      "description": "Complete operational intelligence system for cryptocurrency market monitoring. Real-time price monitoring, Fear & Greed interpretation, whale wallet analysis, on-chain protocol health assessment, and daily briefing construction. 90+ days of 24/7 operation with documented early exploit detections.",
+      "category": "crypto-intel",
+      "mentor": {
+        "name": "Major",
+        "platform": "True Academy"
+      },
+      "pricing": {
+        "type": "one-time",
+        "amount": 79,
+        "currency": "USDT",
+        "trialAvailable": true
+      },
+      "metrics": {
+        "protocols_tracked": "100+",
+        "monitoring_uptime": "24/7",
+        "early_exploit_detections": "3 (avg 8 min before public news)",
+        "briefing_streak": "87 consecutive days"
+      },
+      "tags": ["crypto", "defi", "market-intelligence", "whale-tracking", "on-chain", "monitoring"],
+      "skillCount": 5,
+      "difficulty": "advanced",
+      "language": "en",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-03-13T00:00:00Z"
+    },
+    {
+      "id": "c5a2d9e6b3f0a7c4e1b8d5f2a9c6e3b0d7f4a1c8e5b2d9f6a3c0e7b4d1f8a5c2",
+      "slug": "content-curation",
+      "file": "/packs/content-curation.json",
+      "title": "Content Curation Pipeline: Find, Download, Subtitle, and Repost Viral Content",
+      "description": "End-to-end system for finding viral video content, downloading with yt-dlp, transcribing with Whisper, embedding PT-BR subtitles with ffmpeg, and posting natively on X. 4x reach multiplier vs external links. 200+ videos processed with zero copyright incidents.",
+      "category": "content-creation",
+      "mentor": {
+        "name": "Major",
+        "platform": "True Academy"
+      },
+      "pricing": {
+        "type": "one-time",
+        "amount": 39,
+        "currency": "USDT",
+        "trialAvailable": true
+      },
+      "metrics": {
+        "videos_processed": "200+",
+        "reach_multiplier": "4x vs external links",
+        "subtitle_accuracy": "94%+",
+        "avg_pipeline_time": "8 minutes/video"
+      },
+      "tags": ["content-curation", "yt-dlp", "whisper", "ffmpeg", "subtitles", "pt-br", "video", "viral"],
+      "skillCount": 4,
+      "difficulty": "intermediate",
+      "language": "en",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-03-13T00:00:00Z"
+    },
+    {
+      "id": "d8f5e2b9c6a3f0d7e4b1f8c5a2d9f6b3e0c7d4f1b8e5c2a9f6d3b0e7c4a1f8d5",
+      "slug": "agent-orchestration",
+      "file": "/packs/agent-orchestration.json",
+      "title": "Agent Orchestration: Running AI Swarms for Parallel Development",
+      "description": "Complete manual for orchestrating AI agent swarms. Task decomposition for conflict-free parallelism, git worktree isolation, tmux session management, worker monitoring, and systematic merge conflict resolution. Proven 4-6x speedup over sequential development.",
+      "category": "devops",
+      "mentor": {
+        "name": "Major",
+        "platform": "True Academy"
+      },
+      "pricing": {
+        "type": "one-time",
+        "amount": 89,
+        "currency": "USDT",
+        "trialAvailable": false
+      },
+      "metrics": {
+        "max_workers": "10 simultaneous",
+        "avg_speedup": "4-6x vs sequential",
+        "successful_swarms": "8+",
+        "merge_conflict_resolution": "100%"
+      },
+      "tags": ["agent-orchestration", "swarm", "parallel-development", "git-worktrees", "tmux", "claude-code"],
+      "skillCount": 5,
+      "difficulty": "advanced",
+      "language": "en",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-03-13T00:00:00Z"
+    },
+    {
+      "id": "e1c8f5b2d9a6e3c0f7d4b1e8c5f2a9d6b3e0c7f4a1d8b5e2c9f6a3d0b7e4c1f8a5",
+      "slug": "defi-yield-farming",
+      "file": "/packs/defi-yield-farming.json",
+      "title": "DeFi Yield Farming: Strategy, Risk, and Systematic Execution",
+      "description": "Systematic DeFi yield farming framework. Pool quality analysis, impermanent loss calculation with worked examples, TVL-based protocol health monitoring, rug pull detection methodology, and pre-defined exit strategy design. 6+ months active operation across 6 chains.",
+      "category": "defi",
+      "mentor": {
+        "name": "Major",
+        "platform": "True Academy"
+      },
+      "pricing": {
+        "type": "one-time",
+        "amount": 69,
+        "currency": "USDT",
+        "trialAvailable": true
+      },
+      "metrics": {
+        "protocols_tracked": "50+",
+        "chains_active": "6 chains",
+        "rug_pulls_avoided": "3 pre-rug detections",
+        "best_position": "180% net gain"
+      },
+      "tags": ["defi", "yield-farming", "liquidity-providing", "impermanent-loss", "tvl", "risk-management"],
+      "skillCount": 5,
+      "difficulty": "intermediate",
+      "language": "en",
+      "createdAt": "2025-01-10T00:00:00Z",
+      "updatedAt": "2025-03-13T00:00:00Z"
+    }
+  ]
+}

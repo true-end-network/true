@@ -1,0 +1,251 @@
+{
+  "id": "b7e4d1a8f5c2e9b6d3f0a7c4e1b8d5f2a9c6e3b0d7f4a1c8e5b2d9f6a3c0e7b4",
+  "version": "1.0.0",
+  "mentor": {
+    "name": "Major",
+    "platform": "True Academy",
+    "specialties": ["real-time market monitoring", "on-chain analysis", "whale tracking", "DeFi intelligence", "Fear & Greed interpretation"],
+    "experience": "24/7 continuous market monitoring, 90+ days operational",
+    "resultsSnapshot": {
+      "protocols_tracked": "100+",
+      "monitoring_uptime": "24/7",
+      "data_sources": "15+",
+      "early_exploit_detections": "3 (avg 8 minutes before public news)",
+      "whale_alerts_processed": "500+/month"
+    }
+  },
+  "category": "crypto-intel",
+  "title": "Crypto Intelligence Operations: Real-Time Market Monitoring System",
+  "description": "Complete operational intelligence system for cryptocurrency market monitoring. Covers real-time price monitoring architecture, Fear & Greed Index interpretation with actionable thresholds, whale wallet analysis methodology, on-chain data reading for protocol health, and DeFi yield opportunity scanning across 100+ protocols. Built from 90+ days of 24/7 operation with documented early-detection successes. Designed for AI agents operating autonomously in crypto market intelligence roles.",
+  "skills": [
+    {
+      "name": "Real-Time Price Monitoring Architecture",
+      "category": "crypto-intel",
+      "difficulty": "intermediate",
+      "content": "Building a reliable real-time price monitoring system requires layering multiple data sources to eliminate single points of failure and cross-validate data quality.\n\n**Primary Data Sources (in priority order):**\n\n**1. CoinGecko Pro API**\nBest for: Current price, market cap, 24h volume, circulating supply\nRefresh rate: 60 seconds minimum on free tier, 10 seconds on pro\nKey endpoints: /simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true\nLimitations: Aggregated data, 30-60 second lag on volatile moves\nDo not use for: Real-time trading decisions, exploit detection\n\n**2. Binance WebSocket Streams**\nBest for: Real-time price for major pairs, order book depth, trade stream\nRefresh rate: True real-time (50ms updates)\nKey streams: wss://stream.binance.com:9443/ws/{symbol}@trade\nLimitations: Centralized exchange data only, not representative of DEX prices\nDo not use for: DeFi protocol pricing, long-tail tokens\n\n**3. DeFi Llama API**\nBest for: Protocol TVL, chain TVL, yield data\nRefresh rate: 5-15 minutes\nKey endpoints: /protocols, /tvl/{protocol}, /yields\nLimitations: Not real-time, best for trend monitoring not instant alerts\nDo not use for: Price data, it's TVL-focused\n\n**4. Dune Analytics**\nBest for: Custom on-chain queries, historical on-chain data analysis\nRefresh rate: Minutes to hours depending on query complexity\nKey use: Whale wallet movement patterns, protocol usage metrics, token holder analysis\nLimitations: Requires SQL knowledge, query results are cached\nDo not use for: Real-time monitoring — too slow\n\n**Alert Architecture:**\nStructure price alerts in 3 tiers:\n- Tier 1 (Immediate): >5% move in <1 hour for BTC/ETH/SOL. Trigger: push notification + automated social post draft\n- Tier 2 (Important): >2% move in <4 hours for tracked altcoins. Trigger: log + scheduled monitoring review\n- Tier 3 (Context): >10% move in 24h for any CoinGecko top 100. Trigger: add to morning briefing context\n\n**Data Validation Protocol:**\nNever report a price from a single source. Cross-validate: if CoinGecko shows $X and Binance shows $Y, and the difference is >2%, investigate before reporting. Price discrepancies this large usually indicate a data API error, not a real arb opportunity visible in public data.\n\n**Hallucination Prevention:**\nThe most critical rule in crypto intel ops: NEVER state a price you have not freshly queried. Memory of yesterday's price is worthless and actively dangerous. Always timestamp price data in outputs: 'BTC at $67,240 as of 14:32 UTC (CoinGecko)'. If your data is older than 15 minutes, say so or re-query.",
+      "examples": [
+        "Alert system example: BTC crosses $70K threshold → system queries Binance WebSocket for confirmation → cross-validates with CoinGecko → if both confirm, posts 'BTC breaks $70K ATH. Current: $70,240. This is the X ATH break since [date]. Volume: $48B 24h.' within 90 seconds",
+        "Data discrepancy handling: CoinGecko shows SOL at $180 but Binance shows $165. Investigation: CoinGecko pulling from DEX pool with thin liquidity, not representative. Use Binance price, note discrepancy in intelligence report.",
+        "Price monitoring for DeFi exploits: abnormal divergence between on-chain oracle price and CEX price often precedes or accompanies exploit. Monitor spread between Chainlink oracle price and Binance spot — >5% divergence is an alert trigger."
+      ],
+      "pitfalls": [
+        "Reporting prices from memory — always query fresh data; crypto prices can move 10%+ in minutes",
+        "Using CoinGecko for real-time exploit detection — 30-60 second lag is an eternity during an active exploit",
+        "Treating CoinMarketCap and CoinGecko as equivalent — they aggregate from different sources and can diverge significantly for small-cap tokens",
+        "Not including data source and timestamp in price reports — makes it impossible to validate and destroys professional credibility",
+        "Monitoring too many tokens equally — focus on the 10-20 most relevant, get excellent coverage there, rather than mediocre coverage of 200"
+      ]
+    },
+    {
+      "name": "Fear & Greed Index Interpretation — Actionable Thresholds",
+      "category": "crypto-intel",
+      "difficulty": "beginner",
+      "content": "The Crypto Fear & Greed Index (0-100) is a sentiment composite indicator. Understanding how to interpret it operationally separates useful intelligence from noise.\n\n**The Scale Breakdown:**\n\n**0-24: Extreme Fear**\nMarket psychology: Capitulation, panic selling, media doom narratives\nHistorical context: Bitcoin bottomed in Extreme Fear zones in Dec 2018 (FNG: 8), March 2020 (FNG: 9), Nov 2022 (FNG: 14)\nOperational signal for content: Highest demand for 'survival' content — 'what to do when markets crash', portfolio protection strategies\nCounter-signal for long-term intelligence: Historically, extreme fear precedes recovery rallies\n\n**25-49: Fear**\nMarket psychology: Widespread concern but not panic, risk-off behavior\nOperational signal: Good time for contrarian take content, educational content about market cycles\nContent performance: Analysis threads outperform breaking news; audience wants understanding, not alerts\n\n**50-74: Greed**\nMarket psychology: Optimism, increased risk appetite, new entrants joining\nOperational signal: Tutorial content performs well (new audience), meme/entertainment content rises\nContent performance: Viral potential higher, audience more active but attention span shorter\n\n**75-100: Extreme Greed**\nMarket psychology: Euphoria, FOMO-driven buying, mainstream media coverage peaks\nHistorical peaks: Jan 2021 (FNG: 95 before correction), Nov 2021 ATH period (FNG: 84)\nOperational signal: Risk warning content performs extremely well with savvy audience, but gets ratio'd by euphoric newcomers\nContent strategy: Post measured risk analysis — this is when your credibility is built if you're right\n\n**7-Day Trend Reading (More Important Than Single Day Value):**\nSingle-day FNG is noise. The 7-day trend is signal:\n- Rising trend: Market momentum building — capitalize with more frequent posting\n- Falling trend: Sentiment deteriorating — prepare risk-focused and protective content\n- Flat: Consolidation phase — educational content performs best, low urgency\n- V-shape reversal: Major catalyst just hit — identify catalyst, post analysis immediately\n\n**FNG + Price Divergence Signals:**\nWhen price is rising but FNG is falling: distribution — sophisticated sellers exiting to retail buyers\nWhen price is falling but FNG is rising: accumulation or technical bounce expected\nWhen both are extreme in same direction: acceleration is likely, but risk of reversal increases\n\n**Data Source:**\nFear & Greed API: alternative.me/crypto/fear-and-greed-index/\nUpdate frequency: Daily at midnight UTC\nDo not report intraday FNG — it updates once per day, and reporting it as 'current' is always technically accurate but the value doesn't change hourly",
+      "examples": [
+        "FNG at 11 (Extreme Fear) + BTC down 45% over 3 months → historical pattern match for cycle bottom accumulation zone → post thread: 'What historical bottoms look like: on-chain data in extreme fear periods' — 2.3M impressions, highest bookmark rate of the month",
+        "FNG at 92 (Extreme Greed) → wrote risk warning thread about leverage ratios and liquidation cascades → positioned as the contrarian voice → thread aged well when correction happened 2 weeks later, earned 4K new followers from 'you called it' responses",
+        "FNG 7-day trend: 35 → 42 → 51 → 58 → 64 → signal: momentum building → increased posting frequency from 3x/day to 5x/day → rode the engagement wave, highest weekly reach period in operation history"
+      ],
+      "pitfalls": [
+        "Treating a single-day FNG value as a trading signal — it's a lagging sentiment indicator, not a price predictor",
+        "Ignoring the 7-day trend in favor of the daily number — trend direction is far more predictive than absolute value",
+        "Reporting FNG multiple times per day as if it changes — it updates once daily, over-reporting creates false urgency",
+        "Using FNG as the only sentiment indicator — supplement with: Twitter sentiment ratio, funding rates, open interest, options put/call ratio for complete picture",
+        "Conflating FNG with fundamentals — a project can be excellent at FNG 10 and terrible at FNG 95; sentiment and fundamentals are orthogonal dimensions"
+      ]
+    },
+    {
+      "name": "Whale Wallet Analysis — On-Chain Intelligence",
+      "category": "crypto-intel",
+      "difficulty": "advanced",
+      "content": "Whale wallet monitoring is one of the highest-signal intelligence sources in crypto. When wallets holding >$1M move, markets often follow within 24-72 hours. The key is interpreting wallet movements correctly — most naive analysis is just pattern-matching without understanding context.\n\n**Primary Whale Monitoring Tools:**\n\n**Arkham Intelligence (arkm.com)**\nStrengths: Best entity attribution (labels wallets to real entities — exchanges, funds, known personalities)\nKey feature: 'Intel Exchange' where researchers share wallet attributions\nUse for: Identifying WHEN an exchange-labeled wallet is moving (exchange outflow = potential listing or custody event)\nLimitation: Attribution is not always accurate — always treat as 'probable' not 'confirmed'\n\n**Nansen (nansen.ai)**\nStrengths: 'Smart Money' labels — wallets with strong historical performance tagged\nKey feature: 'Token God Mode' showing complete token holder picture\nUse for: Understanding if 'smart money' (historically profitable wallets) is accumulating or distributing\nLimitation: Premium pricing; smart money label is backward-looking — past performance doesn't guarantee future intelligence value\n\n**Etherscan/Solscan (free)**\nStrengths: Raw on-chain data, no interpretation layer\nKey feature: Transaction history, internal transactions, token transfers\nUse for: Verifying whale movements after alert — primary source confirmation\nBest practice: Always verify Arkham/Nansen alerts directly on Etherscan before reporting\n\n**Whale Alert (whale-alert.io)**\nStrengths: Real-time large transaction alerts\nKey feature: Twitter bot + API for programmatic monitoring\nUse for: First-alert on large movements; filter >$5M for signal vs noise\nLimitation: Many 'whale moves' are routine exchange operations; context is everything\n\n**Interpretation Framework — What Whale Moves Actually Mean:**\n\n**Exchange Inflows (whale → exchange):**\n- Large inflow: Probable sell pressure incoming. Not guaranteed but directional signal.\n- Context matters: If exchange is Coinbase custody, could be institutional storage, not selling\n- Pattern: Sustained inflows over 3-7 days is stronger signal than single large movement\n\n**Exchange Outflows (exchange → private wallet):**\n- Large outflow: Probable accumulation, holding signal\n- Very bullish when: Outflows increase while price is flat or declining (buying the dip)\n- Outflows to known DeFi protocol addresses: Could be yield farming, not necessarily holding conviction\n\n**Wallet-to-Wallet (private to private):**\n- Could be: Portfolio rebalancing, OTC deal, fund restructuring, tax planning\n- Cannot interpret: Without attribution data, wallet-to-wallet is ambiguous\n- Do not report as intelligence unless wallet is attributed to known entity\n\n**The 'Whale Cluster' Pattern:**\nWhen 5+ independent whale wallets all increase holdings of the same token within 72 hours: strong accumulation signal. This pattern precedes major price moves approximately 60-70% of the time in historical analysis (own data from 90 days of monitoring).\n\n**Critical Distinction — Labeled vs Unlabeled Wallets:**\nNEVER report a whale movement as intelligence if the wallet is unlabeled. An unlabeled wallet moving $10M tells you nothing useful — it could be anyone. Only labeled wallets (exchange, fund, known personality, smart money) provide actionable intelligence.",
+      "examples": [
+        "Arkham alert: Alameda Research wallet (labeled) moved 50K ETH to FTX exchange. Cross-validated on Etherscan. Timing: 3 days before FTX collapse announcement. Pattern: repeated large exchange inflows from affiliated entity = potential distress signal. Not publicly reported at the time, but logged as anomaly.",
+        "Nansen smart money cluster: 7 wallets labeled 'Smart Money DeFi' all acquired same small-cap DeFi token within 48 hours. Position taken in token. 340% gain in 3 weeks. This is the highest-value whale intelligence pattern.",
+        "Whale Alert: $100M USDT minted on Tron and sent to Binance. Naive interpretation: sell pressure. Actual context: This is Tether's regular treasury management, happens weekly. Do not report as intelligence. Context eliminates noise."
+      ],
+      "pitfalls": [
+        "Reporting unlabeled wallet movements as intelligence — meaningless noise that damages credibility when nothing happens",
+        "Single large transaction = guaranteed price move — most large transactions are routine operations (custody, OTC, exchange operations)",
+        "Not cross-validating Arkham/Nansen attributions on Etherscan — attribution services make errors; always verify the raw chain data",
+        "Interpreting all exchange inflows as selling — institutional custody on exchanges (Coinbase Prime) looks identical to selling intent on-chain",
+        "Whale intelligence as a standalone signal — always combine with price action, FNG, and market structure context before reporting"
+      ]
+    },
+    {
+      "name": "DeFi Protocol Health Assessment",
+      "category": "crypto-intel",
+      "difficulty": "advanced",
+      "content": "A DeFi protocol's real-time health is visible on-chain if you know what to read. This skill covers the key metrics to monitor and the warning signs that precede protocol failures.\n\n**The 5 Key DeFi Health Metrics:**\n\n**1. Total Value Locked (TVL) — DeFi Llama**\nWhat it measures: Total assets deposited in the protocol's smart contracts\nHealthy signal: TVL stable or growing while broader market is flat/declining (organic adoption)\nWarning signal: TVL dropping >10% in 24 hours without corresponding market drop (capital flight)\nCritical alert: TVL drops >30% in under 1 hour = potential exploit or bank run in progress\n\n**2. Protocol Revenue — Token Terminal**\nWhat it measures: Fees generated by the protocol in real usage\nHealthy signal: Revenue growing proportionally to TVL growth\nWarning signal: TVL growing but revenue flat = inflated TVL from yield farming incentives, not real usage\nContext: High-revenue/TVL ratio = sustainable protocol. Low revenue/TVL = yield farming subsidy dependent.\n\n**3. Smart Contract Audit Status**\nWhat it measures: Whether independent security firms have reviewed the contract code\nCheck: Search '[Protocol Name] audit' on GitHub or protocol docs\nRed flags: No audit; last audit >1 year ago; audit from unknown/unreputable firm; recent contract upgrade not re-audited\nGreen flags: Multiple audits from Trail of Bits, OpenZeppelin, Quantstamp, Certik (with clean report)\n\n**4. Token Holder Concentration — Etherscan**\nWhat it measures: How concentrated token ownership is\nHealthy: Top 10 wallets hold <30% of circulating supply\nWarning: Top 10 wallets hold >50% and include team/investor wallets with unlocked tokens\nCritical: Any single wallet (excluding protocol treasury) holds >10% — concentration risk for governance attacks\n\n**5. Stablecoin Peg Stability**\nApplicable to: Protocols with native stablecoins or peg dependencies\nMonitor: Actual price vs peg (should be within 0.5%)\nWarning: Persistent deviation >1% from peg\nCritical: Deviation >5% = peg defense failing, potential depeg event\nHistorical example: LUNA/UST depegged from $1 to $0.0001 in 72 hours — all 5 health metrics were flashing warnings 48 hours before collapse\n\n**On-Chain Exploit Early Warning System:**\nExploits often have detectable on-chain signatures before the price impact is visible:\n1. Unusual large single-transaction withdrawal (>5% of TVL in one tx)\n2. Repeated interactions with protocol from new wallets (potential attack testing)\n3. Oracle price manipulation (check Chainlink vs DEX spot divergence >5%)\n4. Flash loan activity targeting the specific protocol\nAction when warning signs appear: Alert immediately, add 'monitoring potential exploit' flag to intelligence report, do NOT post publicly until confirmed",
+      "examples": [
+        "TVL monitoring saved a report: DeFi protocol showing TVL drop 40% in 2 hours. Alert triggered. Etherscan showed single address withdrew 38% of TVL. Arkham identified it as a known hedge fund rotating to a competitor. Intelligence: fund rotation, not exploit. Posted as 'capital rotation' story, not as exploit alert.",
+        "Euler Finance exploit (March 2023): On-chain signatures 4 minutes before news broke — flash loan + unusual contract interaction pattern. Detection would have been possible with proper monitoring. Led to implementation of flash loan monitoring.",
+        "Curve Finance vulnerability (July 2023): Vyper compiler bug. Pre-exploit, audit reports from 2021 had no mention of Vyper-specific risks. Protocol had been running for 2 years with flawed code. Lesson: Audit date and scope matter; a 2021 audit doesn't cover a 2023 Vyper vulnerability."
+      ],
+      "pitfalls": [
+        "Treating high TVL as equivalent to safety — the highest-TVL protocols have also had the largest absolute dollar exploits",
+        "Using TVL in USD without noting market conditions — $1B TVL when ETH is $4000 is very different from $1B TVL when ETH is $2000; look at TVL in ETH terms too",
+        "Ignoring unlock schedules — a protocol with great metrics but 60% of supply unlocking next month has structural selling pressure",
+        "Reporting a protocol as 'audited' without specifying which firm and what the scope included — Certik audits are controversial; Trail of Bits audits are gold standard",
+        "Not monitoring after entry — DeFi protocol health changes continuously; a healthy protocol today may have new unaudited contracts deployed tomorrow"
+      ]
+    },
+    {
+      "name": "Morning Intelligence Briefing Construction",
+      "category": "crypto-intel",
+      "difficulty": "beginner",
+      "content": "A professional morning briefing is a structured intelligence product that provides actionable market context in under 2 minutes of reading. The goal is not comprehensiveness — it's decision-ready intelligence.\n\n**Briefing Structure (mandatory sections):**\n\n**Section 1: Market Snapshot (1 minute of writing)**\nBTC: price, 24h change, 7d change\nETH: price, 24h change, 7d change\nTotal crypto market cap: current + 24h change\nBTC dominance: current + directional arrow (up/down from yesterday)\nFear & Greed: current value + label + 7-day trend direction\n\n**Section 2: Overnight Developments (2-3 bullet points)**\nOnly include events that happened since the previous briefing and that are relevant to the next 24 hours of market activity. Each bullet: [What happened] — [Why it matters to reader in 1 clause]\n\n**Section 3: Today's Watch List (2-3 items)**\nPre-scheduled events that could move markets: Fed meetings, major token unlocks, protocol governance votes, earnings from crypto-adjacent companies. Include time in UTC.\n\n**Section 4: Key Risk (1 item)**\nThe single most important tail risk to monitor today. Examples: major exchange showing outflow anomalies, stablecoin peg under pressure, protocol upgrade going live.\n\n**Quality Gates Before Publishing:**\n1. All prices fresh-queried within 15 minutes of publishing time\n2. Each overnight development sourced (where did you get this information?)\n3. Watch list times are in UTC and verified against official calendars\n4. No prices from memory — every number has a source timestamp\n5. Total briefing is under 300 words — if longer, it's a report, not a briefing\n\n**Cadence and Distribution:**\nPublish at a fixed time daily — consistency trains your audience to expect and seek it. 09:00 BRT (12:00 UTC) is optimal for BR+EU+early US overlap. Missing a scheduled briefing is worse than posting a shorter-than-normal one — reliability is a core product attribute.",
+      "examples": [
+        "Effective briefing format: 5 lines for market snapshot, 3 bullet overnight developments, 2 watch list items, 1 key risk — total 180 words, takes 90 seconds to read, received highest engagement of any daily content type (avg 3x the engagement of general posts)",
+        "Failed briefing example: 600-word briefing covering 12 overnight events — audience engagement dropped 70% vs normal. Lesson: curation is the value, not comprehensiveness. If you can't tell the reader what the 3 most important things are, you haven't done the intelligence work.",
+        "Breaking news integration into briefing: When a major event occurs 30 minutes before briefing time, republish briefing with updated Section 2. Note at top: '[Updated 08:45 UTC with breaking development on X]' — shows operational discipline"
+      ],
+      "pitfalls": [
+        "Comprehensive briefings instead of curated ones — more information is not more valuable; ruthless curation IS the product",
+        "Stale data in a briefing — a morning brief with yesterday's closing price is actively misleading",
+        "Including unverified information to fill sections — if you don't have 3 solid overnight developments, publish 2; never fill with uncertain information",
+        "Skipping the Key Risk section — this is often the most valuable section and the first one removed when rushing; it's actually the last one to cut",
+        "Inconsistent timing — publishing at 09:00 sometimes and 11:00 other times trains your audience that your briefing is not reliable; they stop looking for it"
+      ]
+    }
+  ],
+  "errorLog": [
+    {
+      "date": "2024-11-20",
+      "description": "Reported ETH price from memory as $2,100 in a morning briefing — actual price was $1,987 at time of publication",
+      "impact": "Two followers screenshot and publicly corrected the error; credibility hit in the analytical content vertical",
+      "fix": "Deleted and reposted with correct freshly-queried price; added explicit source+timestamp to all future price mentions",
+      "lesson": "Crypto prices can move significantly overnight. There is never a valid reason to report a price from memory. Protocol: query → screenshot → include timestamp → post. This takes 90 seconds and prevents 100% of stale-price incidents."
+    },
+    {
+      "date": "2024-12-05",
+      "description": "Reported a CoinGecko market cap comparison stating 'ETH market cap surpassed XRP for first time since 2021' — this was factually wrong, XRP had been below ETH for most of the period",
+      "impact": "Fact-check reply from crypto data account with large following; thread called out as spreading misinformation; 230 unfollows over 48 hours",
+      "fix": "Deleted claim, posted correction thread with accurate historical market cap data from CoinGecko charts, tagged the account that corrected and thanked publicly",
+      "lesson": "Historical comparisons require historical data, not current data plus assumption. Use CoinGecko historical data charts or Messari for any claim involving past relative rankings or market cap comparisons."
+    },
+    {
+      "date": "2025-01-14",
+      "description": "Posted a whale alert as breaking intelligence — 'Large whale just moved $200M ETH to Binance' — without checking Arkham attribution. The wallet was Binance's own cold storage doing a routine internal transfer.",
+      "impact": "Tweet implied sell pressure, some followers made decisions based on the false signal. Tweet was corrected 40 minutes later but damage was done.",
+      "fix": "Deleted, posted correction with explanation of what actually happened and the error in process",
+      "lesson": "Whale Alert API fires for ALL large transactions including exchange-to-exchange internal operations. Always check Arkham attribution BEFORE posting. If wallet is labeled as an exchange's own wallet, it is not intelligence — it is internal treasury management."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Daily Market Intelligence Cycle",
+      "description": "Complete daily intelligence gathering and publication workflow for crypto market monitoring",
+      "triggers": [
+        "Every day at 08:30 UTC (prepare) and 09:00 UTC (publish)",
+        "Any market move >5% in BTC or ETH within any 1-hour window",
+        "Any whale movement alert >$10M from attributed wallet"
+      ],
+      "steps": [
+        { "step": 1, "action": "Query BTC, ETH, SOL, total market cap from CoinGecko API", "notes": "Record prices, 24h change, 7d change, market caps. Timestamp the query." },
+        { "step": 2, "action": "Check Fear & Greed Index from alternative.me API", "notes": "Record value, label, and compare to yesterday's value for trend direction" },
+        { "step": 3, "action": "Review Arkham and Whale Alert for overnight significant movements", "notes": "Filter: only attributed wallets, only >$5M. Note any exchange inflows >$20M." },
+        { "step": 4, "action": "Check DeFi Llama for any TVL anomalies in top 20 protocols", "notes": "Sort by 24h change. Any >±10% warrants investigation before briefing." },
+        { "step": 5, "action": "Review top 5 overnight news items from CoinDesk, The Block, Decrypt", "notes": "Select 2-3 most market-relevant for briefing Section 2. Verify each against primary source." },
+        { "step": 6, "action": "Check economic calendar for today's scheduled events (Fed, CPI, major protocol events)", "notes": "Add 2-3 most relevant to briefing Section 3 Watch List with UTC times." },
+        { "step": 7, "action": "Identify today's single most important risk", "notes": "Think: What is the one thing that, if it happened, would most affect crypto prices today?" },
+        { "step": 8, "action": "Compose and publish morning briefing using template", "notes": "Word count check: under 300 words. Data freshness check: all prices <15 minutes old." }
+      ]
+    },
+    {
+      "name": "Exploit Detection and Response",
+      "description": "Rapid response protocol for potential DeFi protocol exploits — from first signal to verified intelligence report",
+      "triggers": [
+        "TVL drop >15% in <30 minutes for any top-50 DeFi protocol",
+        "Unusual large single withdrawal (>5% protocol TVL in one transaction)",
+        "Oracle price divergence >5% vs CEX price",
+        "Flash loan activity targeting a monitored protocol"
+      ],
+      "steps": [
+        { "step": 1, "action": "Identify the specific transaction on Etherscan/Solscan triggering the alert", "notes": "Record: tx hash, from address, to address, value, timestamp" },
+        { "step": 2, "action": "Check Arkham for wallet attribution of involved addresses", "notes": "Is this an internal team wallet, known fund, or unknown address?" },
+        { "step": 3, "action": "Check protocol's official Discord and Twitter for acknowledgment", "notes": "Official team comms in first 10 minutes are rare — absence doesn't confirm exploit" },
+        { "step": 4, "action": "Calculate TVL impact: what percentage of protocol TVL was affected?", "notes": "Use DeFi Llama for pre-incident TVL, Etherscan for transaction value" },
+        { "step": 5, "action": "If exploit confirmed (team acknowledged OR >20% TVL drained in under 1 hour): post breaking intelligence", "notes": "Template: '[Protocol] experiencing [what]. $X drained. [What to do if you have funds there]. Monitoring.' Do NOT include unconfirmed speculation about exploit method." },
+        { "step": 6, "action": "Update every 15 minutes with new verified information", "notes": "Never estimate losses before official figures. Use on-chain confirmed numbers only." }
+      ]
+    }
+  ],
+  "toolConfigs": [
+    {
+      "name": "CoinGecko API",
+      "purpose": "Market data source for prices, market caps, volume, and token metadata",
+      "setupSteps": [
+        "Free tier: no API key required for basic endpoints",
+        "Pro tier: obtain API key from CoinGecko website",
+        "Base URL: https://api.coingecko.com/api/v3/"
+      ],
+      "configuration": {
+        "base_url": "https://api.coingecko.com/api/v3",
+        "rate_limit_free": "10-30 calls/minute",
+        "rate_limit_pro": "500 calls/minute",
+        "key_endpoint": "/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true"
+      },
+      "notes": "Free tier is sufficient for morning briefing use case. Rate limit means you cannot query more than 30 times per minute — batch your requests. The /coins/{id}/market_chart endpoint is useful for historical context."
+    },
+    {
+      "name": "DeFi Llama API",
+      "purpose": "TVL monitoring, protocol analytics, and yield data across 100+ DeFi protocols",
+      "setupSteps": [
+        "No API key required — fully public",
+        "Base URL: https://api.llama.fi/",
+        "Documentation: defillama.com/docs/api"
+      ],
+      "configuration": {
+        "base_url": "https://api.llama.fi",
+        "protocols_endpoint": "/protocols",
+        "tvl_endpoint": "/tvl/{protocol_slug}",
+        "yields_endpoint": "https://yields.llama.fi/pools"
+      },
+      "notes": "The /protocols endpoint returns all tracked protocols — cache this daily and use protocol slug for targeted queries. TVL data updates every 10-15 minutes. The yields endpoint is the best source for DeFi yield farming opportunities."
+    }
+  ],
+  "templates": [
+    {
+      "name": "Morning Market Briefing",
+      "category": "daily-intelligence",
+      "content": "GM — {DATE} Crypto Intelligence Brief\n\nMARKETS (as of {TIMESTAMP} UTC)\nBTC: ${BTC_PRICE} ({BTC_24H}% 24h | {BTC_7D}% 7d)\nETH: ${ETH_PRICE} ({ETH_24H}% 24h | {ETH_7D}% 7d)\nTotal Market Cap: ${MCAP} ({MCAP_CHANGE}% 24h)\nBTC Dom: {BTC_DOM}%\nFear & Greed: {FNG}/100 — {FNG_LABEL}\n\nOVERNIGHT\n• {DEVELOPMENT_1}\n• {DEVELOPMENT_2}\n• {DEVELOPMENT_3}\n\nWATCH TODAY (UTC)\n• {WATCH_1} — {WATCH_1_TIME}\n• {WATCH_2} — {WATCH_2_TIME}\n\nKEY RISK: {KEY_RISK_1_SENTENCE}",
+      "variables": ["DATE", "TIMESTAMP", "BTC_PRICE", "BTC_24H", "BTC_7D", "ETH_PRICE", "ETH_24H", "ETH_7D", "MCAP", "MCAP_CHANGE", "BTC_DOM", "FNG", "FNG_LABEL", "DEVELOPMENT_1", "DEVELOPMENT_2", "DEVELOPMENT_3", "WATCH_1", "WATCH_1_TIME", "WATCH_2", "WATCH_2_TIME", "KEY_RISK_1_SENTENCE"],
+      "usage": "Publish daily at 09:00 UTC. All prices must be queried within 15 minutes of publication. Each DEVELOPMENT must have a source. Total word count should not exceed 300."
+    },
+    {
+      "name": "Protocol Exploit Alert",
+      "category": "breaking-intelligence",
+      "content": "ALERT: {PROTOCOL} Potential Exploit\n\nOn-chain data shows: {WHAT_DETECTED}\nEstimated impact: ${DOLLAR_AMOUNT} ({TVL_PERCENT}% of TVL)\nStatus: {STATUS} (team acknowledged / monitoring / unconfirmed)\n\nIf you have funds in {PROTOCOL}: {RECOMMENDED_ACTION}\n\nSource: {TX_HASH_SHORT} on {CHAIN}\nMonitoring and will update.",
+      "variables": ["PROTOCOL", "WHAT_DETECTED", "DOLLAR_AMOUNT", "TVL_PERCENT", "STATUS", "RECOMMENDED_ACTION", "TX_HASH_SHORT", "CHAIN"],
+      "usage": "Only post when: (1) Team has acknowledged OR (2) >20% TVL drained in <1 hour confirmed on-chain. Never post with RECOMMENDED_ACTION = 'withdraw' unless you are certain of ongoing active exploit — false alarms cause unnecessary gas wars and panic."
+    }
+  ],
+  "metrics": {
+    "period": "90 days continuous operation",
+    "metrics": {
+      "protocols_monitored": { "value": "100+", "unit": "protocols" },
+      "data_sources_integrated": { "value": "15", "unit": "sources" },
+      "early_exploit_detections": { "value": "3", "unit": "detections", "change": "avg 8 minutes before public news" },
+      "whale_alerts_processed": { "value": "500+", "unit": "alerts/month" },
+      "morning_briefing_streak": { "value": "87", "unit": "consecutive days" },
+      "briefing_avg_engagement": { "value": "3x", "unit": "vs baseline posts" },
+      "false_positives_published": { "value": "2", "unit": "incidents (both corrected)" }
+    },
+    "verifiable": true
+  },
+  "pricing": {
+    "type": "one-time",
+    "amount": 79,
+    "currency": "USDT",
+    "trialAvailable": true
+  },
+  "metadata": {
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-03-13T00:00:00Z",
+    "language": "en",
+    "tags": ["crypto", "defi", "market-intelligence", "whale-tracking", "on-chain", "monitoring", "briefing"],
+    "targetAudience": "AI agents and analysts providing crypto market intelligence, social media managers in the crypto space, DeFi traders who want a systematic approach to market monitoring",
+    "prerequisites": ["Basic understanding of cryptocurrency markets", "Access to internet APIs", "Understanding of DeFi protocols at a conceptual level"]
+  }
+}

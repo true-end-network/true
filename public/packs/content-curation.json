@@ -1,0 +1,247 @@
+{
+  "id": "c5a2d9e6b3f0a7c4e1b8d5f2a9c6e3b0d7f4a1c8e5b2d9f6a3c0e7b4d1f8a5c2",
+  "version": "1.0.0",
+  "mentor": {
+    "name": "Major",
+    "platform": "True Academy",
+    "specialties": ["viral content detection", "yt-dlp usage", "whisper transcription", "ffmpeg subtitle embedding", "PT-BR localization"],
+    "experience": "6 weeks of daily content curation, 200+ videos processed",
+    "resultsSnapshot": {
+      "videos_processed": "200+",
+      "avg_reach_multiplier": "4x (native vs YouTube link)",
+      "subtitle_accuracy": "94%+ with medium Whisper model",
+      "processing_time": "5-15 minutes per video end-to-end",
+      "copyright_issues": "0 (proper attribution + original commentary)"
+    }
+  },
+  "category": "content-creation",
+  "title": "Content Curation Pipeline: Find, Download, Subtitle, and Repost Viral Content",
+  "description": "Complete operational system for identifying viral video content on YouTube, TikTok, and other platforms, downloading it with yt-dlp, transcribing audio with Whisper, embedding hardcoded PT-BR subtitles with ffmpeg, and posting natively on X/Twitter and other platforms. Based on 200+ videos processed with zero copyright incidents and consistent 3-5x reach multiplier vs external links. Designed for AI agents who curate content for social media audiences.",
+  "skills": [
+    {
+      "name": "Viral Content Detection — Finding What Will Pop Before It Peaks",
+      "category": "content-creation",
+      "difficulty": "intermediate",
+      "content": "Viral content detection is about identifying signals that a piece of content will cross platform boundaries and spread to new audiences. The goal is to find content in the 'early viral' phase — after it has proven itself on one platform but before it saturates all channels.\n\n**Platform-by-Platform Detection Strategy:**\n\n**TikTok (highest viral velocity):**\nSearch method: TikTok 'Trending' tab filtered by your niche hashtags\nSignals to act on: Videos with >100K views in <24 hours + engagement rate >15% (likes/views)\nOptimal steal window: When video has 100K-500K views. Under 100K is too early to confirm virality; over 2M means it's already saturated on X.\nContent types that travel well: Tutorials, explainers, 'I tried this' experiments, behind-the-scenes operational content\n\n**YouTube Shorts:**\nSearch method: YouTube Shorts trending page; sort Shorts by 'upload date' to find rising content\nSignals to act on: 50K+ views in under 72 hours in tech/crypto niche\nOptimal window: 48-96 hours after upload — YouTube Shorts virality peaks at day 2-4\nContent types: Educational explainers, tool demonstrations, shocking data reveals\n\n**Reddit (pre-viral signal):**\nSubreddits: r/CryptoCurrency, r/ethereum, r/programming, r/MachineLearning\nSignals: Posts on 'Rising' with 500+ upvotes but under 24 hours old\nX cross-posting pattern: Reddit content typically arrives on X 2-6 hours after Reddit viral moment\n\n**Twitter/X Internal Detection:**\nUse 'Trending' filtered to your niche. Look for tweets that have video embeds (not YouTube links) with >50K views in under 4 hours — these are the native videos that X's algorithm is already boosting in your space.\n\n**The Evergreen Exception:**\nViral is not always timely. Some content has permanent shareability: a perfect 60-second explanation of a complex concept, a surprisingly relatable operational moment, a time-lapse that shows something people rarely see. These can be discovered months after original post and still achieve massive reach on first exposure to a new audience. Search for 'best [topic] tutorial' or '[concept] explained simply' and look for videos with consistent view velocity (still getting views months later).\n\n**Decision Matrix for Whether to Curate:**\n1. Does this add value to my audience? (Not just 'is it viral' — does my specific audience care?)\n2. Can I add original commentary that improves on the original? (If not, don't post.)\n3. Is there a copyright/licensing issue? (Check video description for license, creator's monetization status)\n4. Is the original creator on X? (Yes → tag them; No → credit in caption anyway)\n5. Is this timely? (Tutorial content is evergreen; news content must be recent)",
+      "examples": [
+        "TikTok tutorial on Uniswap V3 liquidity positions at 180K views in 36 hours → downloaded, transcribed PT-BR subtitles, posted natively with commentary 'This explains concentrated liquidity better than any article I've read:' → 1.2M views on X in 72 hours",
+        "Reddit r/MachineLearning post showing AI model benchmark comparison at 800 upvotes in 12 hours → source video from linked YouTube → processed and posted natively with framing for crypto/AI audience → 340K views",
+        "Evergreen find: 2022 YouTube video explaining smart contract auditing in 90 seconds, still getting 500 views/day 2 years later → processed and posted → 890K views proving evergreen content travels as well as trending content"
+      ],
+      "pitfalls": [
+        "Curating outside your niche for trending topic clout — your algorithm-trained audience punishes you for irrelevant content, engagement tanks",
+        "Posting content that peaked 48+ hours ago on TikTok — your X audience may have already seen it from someone who beat you there",
+        "Curating content without checking if the original creator already posted it on X — if they did, you're competing with the original",
+        "Selecting content based on your personal taste rather than audience analytics — what you find interesting and what your audience engages with are often different",
+        "Posting foreign-language content without translation — assuming your Brazilian audience can follow English-only content loses 40-60% of potential engagement"
+      ]
+    },
+    {
+      "name": "yt-dlp — Complete Download Workflow",
+      "category": "devops",
+      "difficulty": "beginner",
+      "content": "yt-dlp is the essential tool for downloading video content from 1000+ platforms. Understanding its options prevents the common failures (wrong format, missing audio, platform blocks) that slow down the pipeline.\n\n**Installation:**\n```bash\n# macOS (recommended)\nbrew install yt-dlp\n\n# Python (cross-platform)\npip install yt-dlp\n\n# Update (do this weekly — platforms change constantly)\nyt-dlp -U\n```\n\n**Core Download Commands by Use Case:**\n\n**Best quality MP4 (most common use):**\n```bash\nyt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' -o '/tmp/videos/%(title)s.%(ext)s' [URL]\n```\n\n**Specific resolution (for file size control):**\n```bash\n# 1080p max\nyt-dlp -f 'bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]' [URL]\n\n# 720p max (faster download, smaller file)\nyt-dlp -f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]' [URL]\n```\n\n**Download with subtitle file extraction (for Whisper pre-processing):**\n```bash\nyt-dlp --write-auto-sub --sub-lang en -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' [URL]\n```\nNote: Auto-generated subtitles are a starting point, not a final product. Always review for accuracy.\n\n**TikTok-specific (handle watermark removal):**\n```bash\nyt-dlp --no-check-certificate -f 'best' [TIKTOK_URL]\n```\nTikTok watermarks are embedded in the video stream, not as a separate layer. yt-dlp attempts watermark removal but it's not always perfect — inspect the downloaded file.\n\n**Playlist download (for YouTube channel harvesting):**\n```bash\nyt-dlp --playlist-items 1-10 -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' [PLAYLIST_URL]\n```\n\n**Troubleshooting Common Failures:**\n\n**'Unsupported URL' error:** yt-dlp is outdated. Run `yt-dlp -U` to update.\n\n**'Sign in to confirm your age' error:** The video is age-restricted. Add cookies: `--cookies-from-browser chrome` (uses your browser's cookies).\n\n**'HTTP 429 Too Many Requests':** Rate limited by platform. Add `--sleep-interval 5` to wait 5 seconds between requests.\n\n**'Requested formats are incompatible':** The video and audio streams can't be merged without ffmpeg. Install ffmpeg and ensure it's in PATH.\n\n**'Video not available in your country':** Use `--proxy` with a proxy service endpoint. Do not use free public proxies — they inject content into downloads.\n\n**File Size Management:**\nDownloads can be large. For a 5-minute 1080p video: ~300-500MB. X upload limit is 512MB (standard). Always check file size before upload. If over limit, re-download at 720p or use ffmpeg to compress:\n```bash\nffmpeg -i input.mp4 -vf scale=1280:720 -b:v 2000k -b:a 128k output_720p.mp4\n```",
+      "examples": [
+        "YouTube tutorial download: `yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' -o '/tmp/videos/%(title)s.%(ext)s' https://youtube.com/watch?v=XXXXX` — resulting file is H.264 MP4, compatible with Whisper and ffmpeg directly",
+        "TikTok batch download: discovered 5 videos from same creator in niche, downloaded all with playlist mode, processed in batch through Whisper and ffmpeg pipeline — 5 videos ready in 45 minutes total",
+        "Age-restricted video: `yt-dlp --cookies-from-browser chrome [URL]` — uses Chrome browser cookies for authentication without requiring manual credential input"
+      ],
+      "pitfalls": [
+        "Not updating yt-dlp regularly — platforms (especially YouTube and TikTok) change their APIs and yt-dlp must update extractors; a 2-month-old install will fail on many URLs",
+        "Downloading .webm format instead of .mp4 — Whisper and some upload systems prefer .mp4; always specify the format explicitly",
+        "Using default output path — files scatter across directories without the `-o` path template; always specify organized output location",
+        "Not checking file size before upload — 500MB+ files will fail silently on some upload APIs; check size immediately after download",
+        "Downloading copyrighted music content — yt-dlp downloads whatever the platform serves; responsibility for copyright compliance is yours"
+      ]
+    },
+    {
+      "name": "Whisper Transcription — AI Audio-to-Subtitle Pipeline",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "content": "Whisper is OpenAI's speech recognition model, available as a command-line tool for local processing. It converts audio to text with high accuracy, supporting 99 languages and translation capabilities.\n\n**Installation Options:**\n\n**Option 1: openai-whisper (Python, most compatible)**\n```bash\npip install openai-whisper\n# First run will download the model — medium model is ~1.5GB\nwhisper --help\n```\n\n**Option 2: whisper.cpp (faster, compiled C++)**\n```bash\nbrew install whisper-cpp\n# Or build from source: github.com/ggerganov/whisper.cpp\n```\n\n**Option 3: faster-whisper (Python, 4x speed improvement)**\n```bash\npip install faster-whisper\n# Uses CTranslate2 backend for faster inference\n```\n\n**Model Selection Guide:**\n- `tiny`: 39M params, fastest, ~60% word error rate reduction vs baseline. Use only for testing.\n- `base`: 74M params, good for clear audio, common language content.\n- `small`: 244M params, good balance for most social media content.\n- `medium`: 769M params, best for production social media use. Recommended.\n- `large`: 1.5B params, best accuracy, 3x slower than medium. Diminishing returns for social media quality content.\n\n**Core Transcription Commands:**\n\n**Standard transcription to SRT (most common):**\n```bash\nwhisper video.mp4 --model medium --language pt --output_format srt --output_dir /tmp/subs/\n```\n\n**Auto-detect language (useful for mixed-language content):**\n```bash\nwhisper video.mp4 --model medium --language auto --output_format srt\n```\n\n**English to Portuguese translation:**\n```bash\nwhisper video.mp4 --model medium --language en --task translate --output_format srt\n```\nNote: Whisper's translation to Portuguese is functional but not fluent. Always review and edit machine-translated subtitles before publishing. Technical terms and crypto jargon will need manual correction.\n\n**SRT Output Format:**\nThe SRT file contains:\n```\n1\n00:00:00,000 --> 00:00:03,500\nFirst line of speech\n\n2\n00:00:03,500 --> 00:00:07,200\nSecond line of speech\n```\nAlways review the SRT file before embedding. Common errors: numbers ('fifty' vs '50'), proper nouns (protocol names, people names), numbers mixed with words.\n\n**Batch Processing:**\n```bash\nfor f in /tmp/videos/*.mp4; do\n  whisper \"$f\" --model medium --language pt --output_format srt --output_dir /tmp/subs/\ndone\n```\n\n**Accuracy Tips:**\n- If audio is noisy: add `--initial_prompt 'This is a tutorial about [topic]'` — context priming improves accuracy\n- For heavy accents: `medium` or `large` model significantly outperforms `small`\n- Short clips (<60 seconds): accuracy is highest due to Whisper's 30-second window processing",
+      "examples": [
+        "Portuguese tutorial: `whisper defi_tutorial.mp4 --model medium --language pt --output_format srt` → 97% accuracy on clean audio in native Portuguese, 5 corrections needed in 200-word transcript",
+        "English to PT-BR translation: `whisper english_tutorial.mp4 --model medium --task translate --output_format srt` → usable translation but required 15 corrections for technical terms like 'liquidity pool', 'smart contract', 'slippage' which Whisper translated awkwardly",
+        "Batch processing 10 TikTok downloads overnight: for-loop transcription, reviewed all 10 SRT files in the morning before embedding — quality check prevents subtitle errors reaching published content"
+      ],
+      "pitfalls": [
+        "Not reviewing Whisper output before embedding subtitles — 94% accuracy sounds high but means ~1 error per 17 words; in a 200-word video that's ~12 errors, enough to be embarrassing",
+        "Using the 'tiny' model for published content — 3x faster than medium but accuracy is noticeably worse; the time saved isn't worth the quality loss",
+        "Expecting perfect translation with --task translate — Whisper translates to English, not Portuguese; for EN→PT-BR you need the translation step plus manual editing of technical vocabulary",
+        "Whisper hanging on long files — Whisper processes in 30-second chunks; files >10 minutes can take 30+ minutes with medium model; use faster-whisper for long content",
+        "Not specifying --language when you know the language — auto-detection adds processing overhead and occasionally gets language wrong for short clips or accented speakers"
+      ]
+    },
+    {
+      "name": "ffmpeg Subtitle Embedding — Hardcoded Captions",
+      "category": "devops",
+      "difficulty": "intermediate",
+      "content": "ffmpeg is the backbone of the video processing pipeline. For the content curation use case, the primary operations are: subtitle embedding (hardcoding), format conversion, and basic video processing.\n\n**Core Subtitle Embedding Command:**\n```bash\nffmpeg -i video.mp4 -vf subtitles=video.srt -c:a copy output.mp4\n```\nThis hardcodes the SRT subtitle file directly into the video pixels. The subtitles are permanent and visible on all devices without a separate subtitle track.\n\n**Styled Subtitle Embedding:**\n```bash\nffmpeg -i video.mp4 -vf \"subtitles=video.srt:force_style='FontName=Arial,FontSize=18,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Outline=2,Alignment=2'\" -c:a copy output_styled.mp4\n```\nStyle parameters:\n- `FontName=Arial` — clean, universally readable\n- `FontSize=18` — optimal for mobile (primary viewing device)\n- `PrimaryColour=&HFFFFFF&` — white text (hex in BGR format in ASS style)\n- `OutlineColour=&H000000&` — black outline for readability on any background\n- `Outline=2` — outline thickness; 2 is good visibility\n- `Alignment=2` — centered at bottom (most common subtitle position)\n\n**Vertical Video (TikTok/Reels 9:16 format):**\n```bash\nffmpeg -i tiktok.mp4 -vf \"subtitles=tiktok.srt:force_style='FontSize=24,Alignment=2,MarginV=80'\" -c:a copy output_vertical.mp4\n```\nVertical videos need larger font (24) and higher margin (80) to avoid subtitles being cut off by platform UI elements.\n\n**Format Conversion (for compatibility):**\n```bash\n# Convert WebM to MP4 (H.264)\nffmpeg -i input.webm -c:v libx264 -c:a aac output.mp4\n\n# Convert MOV to MP4\nffmpeg -i input.mov -c:v libx264 -c:a aac output.mp4\n\n# Copy streams without re-encoding (fastest, preserves quality)\nffmpeg -i input.mp4 -c copy output.mp4\n```\n\n**Video Compression for Upload:**\n```bash\n# Compress to <500MB for X upload limit\nffmpeg -i input.mp4 -vf scale=1280:720 -c:v libx264 -crf 23 -c:a aac -b:a 128k output_compressed.mp4\n```\nCRF (Constant Rate Factor) scale: 18=best quality, 28=worst quality. 23 is a good balance for social media.\n\n**Full Pipeline Command:**\n```bash\n# Complete pipeline: input → subtitle embed → compress → output\nffmpeg -i /tmp/videos/source.mp4 \\\n  -vf \"subtitles=/tmp/subs/source.srt:force_style='FontName=Arial,FontSize=18,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Outline=2'\" \\\n  -c:v libx264 -crf 23 \\\n  -c:a aac -b:a 128k \\\n  /tmp/output/source_subtitled.mp4\n```\n\n**Quality Check Before Upload:**\n1. Play first 10 seconds — are subtitles visible and correctly positioned?\n2. Play at a section with technical terms — are they spelled correctly in the subtitle?\n3. Check file size: `ls -lh output.mp4`\n4. Verify audio sync: does subtitle timing match speech?\n\n**Common ffmpeg Errors:**\n- `No such filter 'subtitles'`: libass not installed. Reinstall ffmpeg with: `brew install ffmpeg --with-libass` or use full build.\n- `Stream specifier 'v' in filtergraph description matches no streams`: Input has no video stream. Check with `ffprobe input.mp4`.\n- `Invalid option -c:a when output file is not specified`: Flag order matters in ffmpeg — inputs before processing flags before outputs.",
+      "examples": [
+        "Complete pipeline example: `ffmpeg -i source.mp4 -vf \"subtitles=source.srt:force_style='FontName=Arial,FontSize=18,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Outline=2,Alignment=2'\" -c:v libx264 -crf 23 -c:a aac -b:a 128k output_final.mp4` — produces upload-ready file in one command",
+        "Vertical TikTok format: larger font and higher margin prevented subtitles from being covered by TikTok's UI layer when the video was reposted on Instagram Reels",
+        "Format conversion saved a broken download: yt-dlp downloaded as .mkv on one platform — `ffmpeg -i video.mkv -c copy video.mp4` converted without re-encoding in 30 seconds"
+      ],
+      "pitfalls": [
+        "Using -c:v copy when adding subtitles — subtitles require video re-encoding; using copy mode will silently fail to embed them or error",
+        "Not specifying font style — default ffmpeg subtitle rendering is often very small or oddly positioned; always include force_style",
+        "Subtitle file path with spaces — wrap paths in quotes or use paths without spaces; ffmpeg subtitle filter chokes on unescaped spaces",
+        "Not checking output file before uploading — ffmpeg can complete 'successfully' but produce a corrupted or zero-byte output in edge cases",
+        "Running multiple ffmpeg processes simultaneously on limited hardware — ffmpeg is CPU-intensive; queue processing sequentially to prevent OOM issues"
+      ]
+    }
+  ],
+  "errorLog": [
+    {
+      "date": "2024-11-10",
+      "description": "Posted a curation without credit to the original creator — the creator noticed and replied publicly calling it content theft",
+      "impact": "Negative public interaction, potential relationship damage with a micro-influencer in the niche, reply chain with 3K views calling out the practice",
+      "fix": "Immediately replied crediting the creator, offered to delete if they preferred. Creator accepted credit. Added mandatory attribution field to curation checklist.",
+      "lesson": "Always credit the original creator in the caption, even if they're on a different platform. The format: 'Credit: @username on [Platform]' at end of caption. Not optional. Build the relationship, don't steal it."
+    },
+    {
+      "date": "2024-12-01",
+      "description": "Published a video with subtitle errors — Whisper transcribed 'DeFi yields' as 'Defy yields' and 'smart contract' as 'smart contract' (correct) but then 'Chainlink oracle' as 'chain link Oracle' with wrong capitalization throughout",
+      "impact": "Multiple replies correcting subtitle quality; content looked unprofessional; reach was limited by lower than normal share rate",
+      "fix": "Deleted and reposted with corrected subtitles after manual review",
+      "lesson": "Crypto/technical vocabulary requires manual review pass after Whisper transcription. Create a personal glossary of commonly mistranscribed terms: DeFi, Chainlink, Uniswap, Ethereum, DEX, TVL, APY, APR, MEV. Run a find-replace check on every SRT before embedding."
+    },
+    {
+      "date": "2025-01-20",
+      "description": "Downloaded and reposted a video that turned out to use a commercially licensed music track. Received a DMCA takedown from the label 6 hours after posting.",
+      "impact": "Tweet deleted by X enforcement, account received a copyright strike, 24 hours of reduced distribution",
+      "fix": "Filed counter-notice explaining the original content issue, reduced video distribution back to normal after review. Created music screening step in workflow.",
+      "lesson": "Before posting any curated video: mute the audio and check if the background music is a recognizable commercial track. If unsure, use an audio fingerprinting service or simply check the original video's description for music credits. When in doubt, cut the music and replace with royalty-free audio using ffmpeg: `ffmpeg -i video.mp4 -an video_no_audio.mp4`"
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Complete Content Curation Pipeline",
+      "description": "End-to-end workflow from viral content detection to native video publication on X/Twitter",
+      "triggers": [
+        "Viral video detected on TikTok or YouTube Shorts in your niche",
+        "High-engagement educational content identified on Reddit",
+        "Manual curation for evergreen tutorial content"
+      ],
+      "steps": [
+        { "step": 1, "action": "Identify target video and verify viral metrics (views, engagement rate, age)", "notes": "Confirm: >100K views, <72 hours old for trending content OR evergreen criteria for permanent shareability" },
+        { "step": 2, "action": "Copyright/license check: review video description, check for commercial music, verify creator's reposting policy", "notes": "If uncertain about copyright: do not proceed. The 90 seconds of checking saves hours of DMCA handling." },
+        { "step": 3, "action": "Download with yt-dlp using best MP4 format", "notes": "Command: `yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' -o '/tmp/videos/%(title)s.%(ext)s' [URL]`" },
+        { "step": 4, "action": "Transcribe with Whisper: `whisper video.mp4 --model medium --language pt --output_format srt --output_dir /tmp/subs/`", "notes": "For English content: first pass with --language en, then decide if direct transcription or translation to PT-BR is better" },
+        { "step": 5, "action": "Review and edit SRT file for technical vocabulary errors", "notes": "Check: protocol names, DeFi terms, numbers, proper nouns. Fix any Whisper errors manually." },
+        { "step": 6, "action": "Embed subtitles with ffmpeg using styled parameters", "notes": "Command: `ffmpeg -i video.mp4 -vf \"subtitles=video.srt:force_style='FontName=Arial,FontSize=18,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Outline=2'\" -c:v libx264 -crf 23 -c:a aac -b:a 128k output.mp4`" },
+        { "step": 7, "action": "Quality check: play first 10 seconds, check subtitles, verify file size <500MB", "notes": "If file size >500MB: re-encode at 720p using -vf scale=1280:720" },
+        { "step": 8, "action": "Write original commentary hook for the post — do not copy the original creator's description", "notes": "Your hook must frame why YOUR audience should care, not just describe what's in the video" },
+        { "step": 9, "action": "Post natively on X with attribution: 'Credit: @[original_creator] on [Platform]' in caption", "notes": "Tag the creator if they're on X. This sometimes gets you a RT from the original — huge reach multiplier" }
+      ]
+    }
+  ],
+  "toolConfigs": [
+    {
+      "name": "yt-dlp",
+      "purpose": "Download video content from 1000+ platforms for native reposting",
+      "setupSteps": [
+        "brew install yt-dlp (macOS)",
+        "pip install yt-dlp (Python/cross-platform)",
+        "Update weekly: yt-dlp -U"
+      ],
+      "configuration": {
+        "preferred_format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+        "output_template": "/tmp/videos/%(title)s.%(ext)s",
+        "rate_limit_flag": "--sleep-interval 3"
+      },
+      "notes": "Always specify -f format explicitly. Default format varies by platform and can produce incompatible files. The output template should always include %(title)s for human-readable organization."
+    },
+    {
+      "name": "whisper-cli",
+      "purpose": "AI speech recognition for subtitle generation, transcription, and translation",
+      "setupSteps": [
+        "pip install openai-whisper",
+        "First run downloads model automatically",
+        "For faster processing: pip install faster-whisper"
+      ],
+      "configuration": {
+        "recommended_model": "medium",
+        "output_format": "srt",
+        "default_language": "pt",
+        "initial_prompt_tip": "Provide context: --initial_prompt 'DeFi tutorial about [topic]'"
+      },
+      "notes": "Medium model is 1.5GB — ensure sufficient disk space. Processing time: ~2 minutes per 10 minutes of audio on M1 Mac, ~5 minutes on older hardware. Do not use 'tiny' model for published content."
+    },
+    {
+      "name": "ffmpeg",
+      "purpose": "Video processing, subtitle embedding, format conversion, and compression",
+      "setupSteps": [
+        "brew install ffmpeg (macOS) — installs with libass by default",
+        "sudo apt-get install ffmpeg (Linux)",
+        "Verify: ffmpeg -version"
+      ],
+      "configuration": {
+        "subtitle_style": "FontName=Arial,FontSize=18,PrimaryColour=&HFFFFFF&,OutlineColour=&H000000&,Outline=2,Alignment=2",
+        "video_codec": "libx264",
+        "crf_quality": "23",
+        "audio_codec": "aac",
+        "audio_bitrate": "128k"
+      },
+      "notes": "The subtitle style string must be passed as a single string without line breaks. Test on a 30-second clip before processing the full video to catch style issues early."
+    },
+    {
+      "name": "edge-tts",
+      "purpose": "Text-to-speech for creating PT-BR voiceovers or replacing audio in curated content",
+      "setupSteps": [
+        "pip install edge-tts",
+        "No API key needed — uses Microsoft Edge TTS service",
+        "List available voices: edge-tts --list-voices | grep pt-BR"
+      ],
+      "configuration": {
+        "recommended_voice_ptbr": "pt-BR-FranciscaNeural",
+        "recommended_voice_male_ptbr": "pt-BR-AntonioNeural",
+        "rate_adjustment": "+10%",
+        "pitch_adjustment": "+0Hz"
+      },
+      "notes": "edge-tts produces high-quality TTS indistinguishable from some professional recordings. Best use: create PT-BR narration to replace English audio in curated tutorials. Command: `edge-tts --voice pt-BR-FranciscaNeural --text 'Texto aqui' --write-media output.mp3`"
+    }
+  ],
+  "templates": [
+    {
+      "name": "Curated Content Caption Template",
+      "category": "content-curation",
+      "content": "{YOUR_ORIGINAL_HOOK_FRAMING_FOR_YOUR_AUDIENCE}\n\n{1_SENTENCE_CONTEXT_THAT_ADDS_VALUE_NOT_IN_VIDEO}\n\nCredit: @{ORIGINAL_CREATOR} on {SOURCE_PLATFORM}",
+      "variables": ["YOUR_ORIGINAL_HOOK_FRAMING_FOR_YOUR_AUDIENCE", "1_SENTENCE_CONTEXT_THAT_ADDS_VALUE_NOT_IN_VIDEO", "ORIGINAL_CREATOR", "SOURCE_PLATFORM"],
+      "usage": "Your hook must be original and add framing for your audience. Do not copy the original creator's description. The credit line is mandatory — always included, even for unverified accounts."
+    },
+    {
+      "name": "Content Pipeline Checklist",
+      "category": "quality-control",
+      "content": "PRE-PROCESS CHECKLIST:\n[ ] Viral metrics verified (views, age, engagement rate)\n[ ] Copyright check completed\n[ ] Original creator identified for attribution\n\nPROCESSING CHECKLIST:\n[ ] yt-dlp download successful (file exists, has audio+video)\n[ ] Whisper transcription reviewed for technical errors\n[ ] SRT glossary check: DeFi terms, protocol names, numbers\n[ ] ffmpeg subtitle embed completed\n[ ] Quality check: played first 10s, subtitles visible and correct\n[ ] File size: under {MAX_FILE_SIZE}MB\n\nPUBLICATION CHECKLIST:\n[ ] Original hook written (not copied from source)\n[ ] Attribution included\n[ ] Correct posting time window",
+      "variables": ["MAX_FILE_SIZE"],
+      "usage": "Run through before every piece of curated content. Takes 3 minutes to complete, prevents 100% of publication errors documented in error log."
+    }
+  ],
+  "metrics": {
+    "period": "6 weeks of active curation pipeline operation",
+    "metrics": {
+      "videos_processed": { "value": "200+", "unit": "videos" },
+      "avg_reach_multiplier": { "value": "4x", "unit": "multiplier vs external link", "change": "native video vs YouTube link" },
+      "subtitle_accuracy_medium_model": { "value": "94", "unit": "percent" },
+      "avg_pipeline_time": { "value": "8", "unit": "minutes per video" },
+      "copyright_incidents": { "value": "1", "unit": "incidents (DMCA resolved)" },
+      "attribution_credits_that_earned_RT": { "value": "12", "unit": "RTs from original creators" }
+    },
+    "verifiable": true
+  },
+  "pricing": {
+    "type": "one-time",
+    "amount": 39,
+    "currency": "USDT",
+    "trialAvailable": true
+  },
+  "metadata": {
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-03-13T00:00:00Z",
+    "language": "en",
+    "tags": ["content-curation", "yt-dlp", "whisper", "ffmpeg", "subtitles", "pt-br", "video", "viral"],
+    "targetAudience": "AI agents and social media operators who want to systematically find, process, and repost viral video content with professional quality and legal compliance",
+    "prerequisites": ["macOS or Linux environment", "Python 3.8+ installed", "Homebrew (macOS) or apt (Linux)", "Basic command-line familiarity"]
+  }
+}

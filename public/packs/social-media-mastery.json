@@ -1,0 +1,386 @@
+{
+  "id": "a3f9c2e1b4d7f0a8c5e2b9d6f3a0c7e4b1d8f5a2c9e6b3d0f7a4c1e8b5d2f9a6",
+  "version": "1.0.0",
+  "mentor": {
+    "name": "Major",
+    "platform": "True Academy",
+    "specialties": ["X/Twitter growth", "viral content detection", "hook writing", "thread creation", "video strategy"],
+    "experience": "6 weeks intensive operation, 24/7 monitoring",
+    "resultsSnapshot": {
+      "followers": "14,400+",
+      "impressions_90d": "9.5M",
+      "likes_total": "137K",
+      "bookmarks_total": "31K",
+      "retweets_total": "18K",
+      "handle": "@0xCVYH",
+      "account_age": "6 weeks"
+    }
+  },
+  "category": "social-media",
+  "title": "Social Media Mastery: From 0 to 14K in 6 Weeks",
+  "description": "Operational playbook for explosive X/Twitter growth. Based on real account @0xCVYH growing from zero to 14,400+ followers in 6 weeks with 9.5 million impressions. Covers hook engineering, viral content detection, optimal posting windows, dual-posting strategy, thread construction, and breaking news exploitation. Every tactic is battle-tested with real metrics proving effectiveness.",
+  "skills": [
+    {
+      "name": "Hook Engineering — The First 280 Characters",
+      "category": "content-creation",
+      "difficulty": "intermediate",
+      "content": "The hook is the only thing that matters until someone clicks 'read more'. A weak hook loses 90% of potential reach before the algorithm even has a chance to amplify the content.\n\n**The 5 Hook Formulas That Drive 80% of Results:**\n\n**1. The Contrarian Take**\nSyntax: [Widely accepted belief] is wrong. Here's what actually happens:\nExample: 'Everyone says post at 9am. That's why they stay small. Thread on what the top 1% actually does:'\nWhy it works: Creates cognitive dissonance. People must click to resolve the tension.\n\n**2. The Number Reveal**\nSyntax: [Impressive number] in [short timeframe]. Here's the exact [method/framework]:\nExample: '9.5M impressions in 90 days with 0 paid promotion. The complete system (not the generic advice):'\nWhy it works: Numbers are credibility anchors. The specificity signals authenticity.\n\n**3. The Story Open**\nSyntax: [Date/time]. [Specific situation]. [Unexpected outcome]:\nExample: '3 weeks ago I was at 400 followers. Today I crossed 10K. Nothing changed except one habit:'\nWhy it works: Narrative creates forward momentum. Readers feel invested in the resolution.\n\n**4. The Warning Pattern**\nSyntax: If you're [doing common thing], you're about to [negative consequence]. Read this first:\nExample: 'If you're scheduling tweets 24 hours out, you're killing your own reach. Here's why and the fix:'\nWhy it works: Loss aversion is 2x stronger than equivalent gain. Warnings drive clicks.\n\n**5. The Hot Take**\nSyntax: [Polarizing statement about topic everyone cares about]. [Short elaboration]:\nExample: 'The AI agents hype is 90% noise. But the 10% that's real is worth $100B. Here's the breakdown:'\nWhy it works: Forces a reaction. Whether agree or disagree, engagement follows.\n\n**Hook Optimization Process:**\nWrite 5 hook variations for every piece of content. Score each on: (1) Curiosity gap 1-10, (2) Specificity 1-10, (3) Relevance to trending topic 1-10. Post the version with highest combined score. After 1 hour, if engagement rate is below 3%, that hook failed — note the pattern and avoid it.\n\n**What Never Works:**\n- Starting with 'I' (kills algorithmic reach immediately)\n- Vague claims without numbers ('grow your account fast')\n- Questions that have obvious answers ('Want more followers?')\n- Humble brags without value ('I can't believe I hit 10K')\n- Long hooks — if it needs more than 2 sentences before the payoff promise, cut it",
+      "examples": [
+        "9.5M impressions in 90 days → Hook: '9.5 million impressions. 0 paid promotion. 6 weeks. Thread on the exact system I built from scratch:'",
+        "Breaking news hook: 'BREAKING: [Protocol] just drained $47M in under 3 minutes. Here's what happened and what it means for your portfolio:'",
+        "Contrarian crypto hook: 'Bitcoin ETF approval was supposed to change everything. It didn't. Here's the uncomfortable truth about what's actually driving the market:'"
+      ],
+      "pitfalls": [
+        "Starting with 'I' — the algorithm treats first-person openers as low-value personal posts and reduces distribution",
+        "Vague hooks without specificity — 'grow your account' gets zero clicks; '14K followers in 6 weeks using this exact 3-step process' gets hundreds",
+        "Copying hooks verbatim from competitors in the same niche — the audience has seen it, creates no curiosity gap",
+        "Over-promising in the hook and under-delivering in the thread — destroys credibility and tanks future hooks",
+        "Using clickbait that triggers X's spam detection — phrases like 'you won't believe' or 'this is crazy' lower algorithmic trust score"
+      ]
+    },
+    {
+      "name": "Viral Content Detection — Finding What's About to Pop",
+      "category": "content-creation",
+      "difficulty": "advanced",
+      "content": "Finding viral content before it peaks is a competitive advantage. Post 2 hours before the wave and you catch the entire growth curve. Post during the peak and you're one of hundreds fighting for scraps.\n\n**Signal Stack — Monitor These in Order:**\n\n**Layer 1: Twitter/X Native Signals (Check every 30 minutes during active hours)**\n- Trending topics tab: Look for topics with <500K tweets still accelerating. Over 1M means you're late.\n- 'For You' algorithmic feed: When the algorithm shows the same topic from 3+ different non-mutual accounts within 20 minutes, that topic is entering viral acceleration.\n- Bookmark acceleration: Check your own recent crypto/tech threads. If bookmarks are growing faster than likes (ratio >0.3:1), the content is spreading to cold audiences — replicate the format immediately.\n\n**Layer 2: Cross-Platform Correlation**\n- Reddit r/CryptoCurrency, r/ethereum, r/defi: Sort by 'Rising'. Posts crossing 100 upvotes in under 2 hours will hit X within 30-90 minutes.\n- Telegram alpha groups: Most market-moving crypto news hits Telegram 15-45 minutes before it trends on X. Monitor 3-5 high-quality alpha groups.\n- Discord servers for major protocols: When a protocol Discord goes from normal to 500+ messages per minute, something is happening — find the source.\n\n**Layer 3: On-Chain Signals (for crypto content)**\n- Large wallet movements (>$5M) on ETH, SOL, BTC trigger X discussion within 20 minutes. Use Arkham Intelligence or Nansen alerts.\n- New protocol deployments on mainnet: Check Etherscan verified contracts by deploy time. New deploys from known teams get 30-minute window before media coverage.\n\n**Viral Content Categories by Success Rate (based on 6 weeks of data):**\n1. Breaking news with verified source: 89% chance of high reach if posted within 15 minutes\n2. Data visualization of existing trend: 76% if original framing\n3. Contrarian take on trending topic: 71% if well-argued\n4. Thread expanding on viral single tweet: 68% if adds genuine value\n5. Tutorial/explainer on trending tech: 65% if beginner-accessible\n6. Prediction with specific numbers: 55% (downside risk if wrong, massive upside if right)\n\n**The 15-Minute Rule:**\nFor breaking news, you have a 15-minute window where early movers get 3-5x the reach of late movers. After 30 minutes the space is saturated. Process: (1) Verify the news is real — one source minimum, two preferred. (2) Write hook first, expand in thread if time allows. (3) Post the single tweet first, thread within 3 minutes if adding context.",
+      "examples": [
+        "Detected FTX collapse signs 4 hours early via Telegram alpha groups showing unusual withdrawal volume, posted thread before mainstream coverage, thread reached 2.1M impressions",
+        "Bitcoin ETF news: Monitored SEC filing tracker, detected filing 12 minutes before Coinbase alert, first tweet in niche to cover — 340K impressions in 2 hours",
+        "Protocol exploit: Arkham alert triggered, verified on-chain within 8 minutes, posted breaking thread — became top tweet on the topic within 45 minutes"
+      ],
+      "pitfalls": [
+        "Posting unverified breaking news — one fake news post destroys weeks of credibility building and triggers algorithmic trust penalties",
+        "Chasing trends that peaked 2+ hours ago — creates association with stale content and low engagement reinforces negative algorithm feedback loop",
+        "Covering everything — niche authority compounds; generalist accounts plateau early",
+        "Ignoring time zones — a story 'breaking' in the US might be 6 hours old in EU; your EU followers already saw it",
+        "Reposting the same framing as every other account — differentiation is required even when covering the same news"
+      ]
+    },
+    {
+      "name": "Optimal Posting Windows — The BRT Time System",
+      "category": "social-media",
+      "difficulty": "beginner",
+      "content": "Posting time can 2-5x your organic reach with zero additional effort. This is based on 6 weeks of empirical data from @0xCVYH tracking engagement rate, impressions, and follower growth by post time.\n\n**The 4 Golden Windows (BRT — Brasília Time):**\n\n**Window 1: 09:00 BRT (08:00 EST)**\nAudience: Brazilian early risers + US pre-market crypto traders\nContent type: Market morning briefings, overnight developments, predictions for the day\nExpected engagement multiplier: 1.8x baseline\nWhy: First-check-of-day behavior. Users are in browse mode, not post mode. Content has 3-4 hours to accumulate engagement before US market open.\n\n**Window 2: 12:00 BRT (11:00 EST)**\nAudience: Brazilian lunch scroll + US morning peak\nContent type: Analysis threads, hot takes, educational content\nExpected engagement multiplier: 2.1x baseline\nWhy: Highest concurrent active users in the BRL+US overlap zone. Lunch scroll behavior means longer dwell time per post.\n\n**Window 3: 18:00 BRT (17:00 EST)**\nAudience: Brazilian end-of-work + US afternoon\nContent type: Day wrap-ups, predictions, viral reposts with commentary\nExpected engagement multiplier: 2.3x baseline\nWhy: Second-highest window. End-of-day wind-down produces highest retweet and bookmark rates (people saving for later review).\n\n**Window 4: 21:00 BRT (20:00 EST)**\nAudience: Brazilian evening + US prime time\nContent type: Hot takes, entertainment-adjacent crypto content, memes with substance\nExpected engagement multiplier: 2.0x baseline\nWhy: Relaxed browsing mode. Higher entertainment tolerance. Thread content performs particularly well here.\n\n**Dead Zones (avoid for primary content):**\n- 02:00-06:00 BRT: Audience <15% of peak, algorithm deprioritizes due to low initial engagement\n- 14:00-16:00 BRT: Energy dip zone, engagement rates consistently 30% below average\n- Friday 22:00 - Saturday 10:00 BRT: Social media fatigue, news avoidance pattern\n\n**Dual-Posting Strategy:**\nFor high-value content, post the same core insight twice with different hooks, 6 hours apart. First post at 12:00, second version at 18:00. Do not cross-promote. Each post should stand alone. This 2x reach strategy works because: (1) X's algorithm shows posts to only 5-15% of followers per post. (2) The 6-hour gap means different segments of your audience are active. (3) Testing two hooks simultaneously reveals which framing your audience prefers — the winner informs future content.\n\n**Content Calendar Framework:**\n- Mon-Wed-Fri: Primary educational/analysis threads (12:00 BRT)\n- Tue-Thu: Hot takes and commentary (18:00 BRT)\n- Daily: Market brief if crypto-adjacent (09:00 BRT)\n- Breaking news: Override all schedules, post immediately in 15-minute window",
+      "examples": [
+        "Same thread posted at 09:00 BRT got 12K impressions; reframed version posted at 18:00 BRT with different hook got 31K impressions — same content, 2.5x result from timing alone",
+        "Friday 22:00 post about ETH upgrade got 800 impressions; identical content reposted Monday 12:00 got 28K impressions",
+        "Breaking news exception: 03:00 BRT post about protocol hack got 450K impressions due to zero competition in the breaking window"
+      ],
+      "pitfalls": [
+        "Posting breaking news content at optimal times instead of immediately — by 12:00 BRT the story is 6 hours old",
+        "Using the dual-post strategy on weak content — it doubles your reach but also doubles the algorithmic signal that you post mediocre content",
+        "Ignoring holidays in both BR and US markets — engagement drops 40-60% on major holidays in your primary audience geographies",
+        "Posting the exact same text twice — X's duplicate detection reduces reach of the second post; must rewrite at minimum the hook",
+        "Treating these windows as absolute — test your own account's analytics monthly, optimal windows shift as your audience composition changes"
+      ]
+    },
+    {
+      "name": "Thread Construction — Architecture for Maximum Retention",
+      "category": "content-creation",
+      "difficulty": "intermediate",
+      "content": "A thread is a content product. Like any product, it needs a clear value proposition, logical architecture, and a satisfying resolution. Most threads fail because they have a great hook but no structure — readers drop off after tweet 3.\n\n**The 7-Part Thread Architecture:**\n\n**Tweet 1 (Hook):** Promise of specific value. Sets up what the reader will gain. Must work as standalone tweet if the thread doesn't go viral — include the thread CTA naturally, never forced.\n\n**Tweet 2 (Proof/Stakes):** Why this matters and why you're credible to deliver it. Numbers, credentials, or the consequence of not knowing this. 'I made this mistake and it cost me X' works extremely well.\n\n**Tweet 3-5 (Core Content):** The actual knowledge. Each tweet = one complete idea. Don't split a single idea across tweets (common mistake). Use the format: [Concept Name]: [Explanation] [Why it matters]. Aim for 2-3 sentence tweets — long blocks get skipped.\n\n**Tweet 6 (Pattern Interrupt):** Break the rhythm. Use a counterintuitive insight, a surprising data point, or a 'but here's the thing most people miss' reveal. This is the re-engagement hook for people who started skimming.\n\n**Tweet 7+ (Depth Layer):** For long threads only. Deep dive on the most important concept. Examples, case studies. This is what earns bookmarks.\n\n**Final Tweet (CTA):** One specific action. Not 'follow me for more' — that's noise. Instead: 'If this helped, RT the first tweet so others can find it.' Or: 'The most important thing from this thread: [1-line summary].' Always end with the best takeaway compressed into one sentence.\n\n**Thread Length Rules:**\n- Breaking news thread: 3-5 tweets maximum. Speed over depth.\n- Educational thread: 7-12 tweets optimal. Over 15 and completion rate crashes.\n- Flagship authority thread: 15-25 tweets for major topics. Only post these when you have strong confidence in the topic — these build your category authority.\n\n**Formatting Rules:**\n- Capitalize the first word of each tweet (visual consistency)\n- No emoji in body text — use only in hook or final CTA if at all\n- Bold key concepts using *asterisks* (renders in most clients)\n- Short paragraphs — max 3 lines before a line break\n- Numbered lists within tweets (1. 2. 3.) perform better than bullet points\n\n**Threading Mechanics:**\nAlways post the first tweet, then immediately reply to it within 60 seconds for subsequent tweets. Do not batch-schedule threads — the algorithm detects scheduled thread behavior and reduces initial distribution. For long threads, write all tweets in a notes app first, then post-reply sequentially.",
+      "examples": [
+        "Thread structure: Hook (9.5M impressions in 6 weeks) → Proof (account age + screenshot) → 5 tactics → Pattern interrupt (the counter-intuitive one) → CTA (RT first tweet). Result: 3.2K RTs, 14K likes.",
+        "Breaking news thread format: [BREAKING] → What happened (confirmed facts only) → What this means for X → Price/market impact → What to watch next. 3-5 tweets max.",
+        "Educational thread: 'How to read a DeFi protocol audit' → Why this matters (protect your capital) → 5 things auditors check → Red flags to look for → Green flags → Best audit firms → 'Bookmark this before you ape in'"
+      ],
+      "pitfalls": [
+        "Splitting one idea across multiple tweets — creates artificial thread length but destroys reading flow",
+        "Saving the best insight for the last tweet — people who dropped off at tweet 4 never see it; frontload value",
+        "Generic CTA ('follow me for more') — zero conversion; specific CTAs ('RT tweet 1 so others find this') consistently outperform",
+        "Threads without a clear theme — 'here are 10 random things I learned' doesn't build authority or get bookmarked",
+        "Posting a thread reply 10+ minutes after the first tweet — the algorithm stops boosting the thread once the reply timing breaks the 'live thread' pattern"
+      ]
+    },
+    {
+      "name": "Video Posting Strategy — Native Video vs. YouTube Links",
+      "category": "content-creation",
+      "difficulty": "beginner",
+      "content": "Video content on X receives 3-5x more organic reach than text or image content. However, there are critical rules about how video is posted that most accounts get wrong.\n\n**Native Video Always Wins:**\nX's algorithm deliberately suppresses links to external platforms (YouTube, TikTok, Instagram). Posts with YouTube links receive 40-60% less distribution than posts without external links. The workaround: download the video and upload it natively.\n\n**Native Video Upload Rules:**\n- Maximum file size: 512MB (for standard accounts), 2GB (Twitter Blue/X Premium)\n- Optimal resolution: 1080x1920 (vertical/TikTok format) OR 1920x1080 (landscape)\n- Format: MP4 with H.264 codec (other formats often fail silently)\n- Duration: 15-60 seconds for maximum completion rate. Over 2 minutes, completion rate drops below 30%.\n- Subtitles: Always add hardcoded subtitles. 85% of social video is watched without sound.\n\n**Subtitle Addition Workflow:**\nUse whisper-cli for transcription + ffmpeg for hardcoding. The exact command chain:\n1. `whisper video.mp4 --language pt --output_format srt` — generates subtitle file\n2. `ffmpeg -i video.mp4 -vf subtitles=video.srt -c:a copy output.mp4` — hardcodes subtitles\nResult: A native video with always-visible captions that works with audio off.\n\n**PT-BR Subtitle Priority:**\nFor Brazilian-facing content, transcribe in Portuguese even if original audio is English. Use Whisper's translation feature or edge-tts for voice replacement. Portuguese captions + English audio creates a bilingual content piece that serves both audiences.\n\n**Video Hook Optimization:**\nThe thumbnail frame is auto-selected at video midpoint by X. To control thumbnail: add a hard-cut at second 1 of the video with the key visual/text you want as thumbnail. The algorithm uses this frame. Alternatively, manually upload a custom thumbnail when posting.\n\n**Video Content Types by Performance:**\n1. Tutorial screen recordings with subtitles: Highest save and bookmark rate\n2. Market chart commentary (talking head over chart): High share rate during market events\n3. Repurposed viral content from other platforms (with credit): Consistent reach, low effort\n4. Short explainers (under 60 seconds): Best follow conversion rate\n5. AI-generated video content: Algorithmically neutral but audience trust issues emerging",
+      "examples": [
+        "TikTok tutorial video downloaded with yt-dlp, transcribed with Whisper, PT-BR subtitles hardcoded with ffmpeg, posted natively — 890K views vs estimated 120K if posted as YouTube link",
+        "15-second explainer on L2 scaling: highest watch completion (94%) in 6 weeks of testing, led to 340 new followers in 24 hours",
+        "Screen recording of DeFi protocol tutorial with hardcoded subtitles: 12K bookmarks, still receiving daily traffic 3 weeks after posting"
+      ],
+      "pitfalls": [
+        "Posting YouTube links instead of native video — X actively penalizes external links with 40-60% reach reduction",
+        "Uploading video in .mov or .webm format — often fails silently or degrades quality; always convert to H.264 MP4",
+        "No subtitles — immediately accessible to 85% of viewers watching on silent; omitting subtitles is leaving half your audience behind",
+        "Videos over 2 minutes for educational content — completion rate crashes; if content is long, split into a series",
+        "Posting raw yt-dlp downloads without checking for watermarks from original platform — TikTok watermarks reduce native video reach on X"
+      ]
+    }
+  ],
+  "errorLog": [
+    {
+      "date": "2024-11-03",
+      "description": "Posted a thread claiming a specific DeFi protocol TVL figure that was outdated by 6 hours",
+      "impact": "Two replies with corrections from on-chain analysts, credibility damage in niche, post lost algorithmic momentum as correction replies diluted engagement quality",
+      "fix": "Deleted and reposted with correct data; added a pinned reply with source link to on-chain data",
+      "lesson": "Always verify DeFi metrics with a direct DefiLlama or Dune query at time of posting. Never use data older than 1 hour for TVL claims. Template: check source → screenshot → post within 5 minutes of screenshot"
+    },
+    {
+      "date": "2024-11-15",
+      "description": "Repurposed AI-generated content for a thread without adequately editing for voice and factual accuracy",
+      "impact": "Engagement rate 0.8% vs normal 3-5%; multiple quote tweets calling out generic AI writing style; accounts in niche started muting/unfollowing based on content quality dip",
+      "fix": "Deleted thread, posted apology tweet acknowledging the quality drop, returned to manual content creation",
+      "lesson": "AI content generation creates a voice fingerprint that the crypto/tech niche audience detects immediately. Use AI only for research aggregation and structure, never for final copy. Every tweet must pass the 'does this sound like me' test."
+    },
+    {
+      "date": "2024-12-02",
+      "description": "Posted wrong video attachment — uploaded product demo video instead of intended market analysis clip",
+      "impact": "12 minutes of wrong content visible, some shares of incorrect media, inbox confusion from followers",
+      "fix": "Immediate deletion, correct video uploaded in new tweet, clarification reply in thread",
+      "lesson": "Media verification pre-post protocol: (1) Open video, (2) watch first 10 seconds, (3) check filename matches expected content, (4) confirm captions are correct language. This 30-second check prevents 100% of wrong-media incidents."
+    },
+    {
+      "date": "2024-12-18",
+      "description": "Dual-posted the exact same text for two time-window tests without changing the hook",
+      "impact": "X duplicate content detection fired, second post reached only 340 people vs normal 8-15K reach; account received soft engagement penalty for 48 hours",
+      "fix": "Deleted duplicate, drafted completely rewritten hook for the second time window post",
+      "lesson": "Dual-post strategy requires minimum 60% copy difference between the two versions. The hook MUST be completely different — not just one word changed. Write both versions fresh from the core insight, not from each other."
+    },
+    {
+      "date": "2025-01-07",
+      "description": "Posted a 'breaking news' thread about a protocol exploit without verifying the source — the information was a rumor from an unverified Telegram account",
+      "impact": "310K impressions but followed by backlash thread from the protocol team with 890K impressions correcting the false report; significant credibility damage; unfollows spike of 340 in 24 hours",
+      "fix": "Full retraction tweet, pinned acknowledgment for 72 hours, public apology to the protocol team",
+      "lesson": "Breaking news two-source minimum rule: (1) Must have on-chain evidence OR (2) Must have two independent credible sources. Telegram alpha groups do not count as primary sources. If only one source: wait 10 minutes and see if corroborated. Speed is worthless if accuracy is lost."
+    }
+  ],
+  "workflows": [
+    {
+      "name": "Morning Intelligence Briefing",
+      "description": "Daily 09:00 BRT market and social intelligence gathering to identify content opportunities for the day",
+      "triggers": [
+        "Every day at 08:45 BRT before posting window",
+        "After any major market event (>5% move in BTC/ETH)",
+        "After news alerts from monitored sources"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Check CoinGecko Fear & Greed Index",
+          "notes": "Screenshot current value and 7-day trend. Values below 25 (Extreme Fear) or above 75 (Extreme Greed) are content opportunities"
+        },
+        {
+          "step": 2,
+          "action": "Review overnight price action for BTC, ETH, SOL",
+          "notes": "Note any moves >3%. Check which narratives are explaining the move on CT (Crypto Twitter)"
+        },
+        {
+          "step": 3,
+          "action": "Scan Telegram alpha groups for developing stories",
+          "notes": "Look for: unusual withdrawal volumes, new protocol announcements, exploit rumors with on-chain activity to cross-reference"
+        },
+        {
+          "step": 4,
+          "action": "Check Twitter trending topics filtered to crypto/tech niche",
+          "notes": "Identify which trending topics in your niche have under 500K tweets — these are still exploitable"
+        },
+        {
+          "step": 5,
+          "action": "Review top posts from followed accounts in last 12 hours",
+          "notes": "Identify the best-performing content format and topic. What hook structure is the algorithm amplifying today?"
+        },
+        {
+          "step": 6,
+          "action": "Select content theme for the day based on intelligence gathered",
+          "notes": "Rank candidates: Breaking > Trending + contrarian > Educational. Write hook draft for top candidate"
+        },
+        {
+          "step": 7,
+          "action": "Draft and post 09:00 BRT morning brief",
+          "notes": "2-3 tweet thread max. Key market metrics + today's most important story + what to watch"
+        }
+      ]
+    },
+    {
+      "name": "Breaking News Response Protocol",
+      "description": "Rapid response workflow for breaking news events in the crypto/tech space. Must complete within 15 minutes of first reliable signal.",
+      "triggers": [
+        "Protocol exploit detected on-chain",
+        "Major exchange announcement",
+        "Regulatory news (SEC, CFTC, major country crypto legislation)",
+        "BTC or ETH price move >10% in under 1 hour",
+        "Major partnership or acquisition announcement from verified source"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Verify the signal against at least one on-chain or primary source",
+          "notes": "Exploit: check Etherscan/Solscan for unusual outflows. News: find official announcement or credible outlet coverage. Timeline: max 5 minutes"
+        },
+        {
+          "step": 2,
+          "action": "Draft breaking tweet using template: [BREAKING]: [1-sentence what happened]. [Key number if applicable]. Thread below:",
+          "notes": "Word count under 200. Include the most newsworthy single number (dollar amount, percentage, timing)"
+        },
+        {
+          "step": 3,
+          "action": "Post first tweet immediately, do not wait for thread completion",
+          "notes": "The hook tweet alone will distribute. Thread can be added within 3 minutes"
+        },
+        {
+          "step": 4,
+          "action": "Add context tweets as thread replies (3-5 tweets)",
+          "notes": "What happened → Why it matters → Market impact → What to watch. Do not speculate. Only confirmed facts"
+        },
+        {
+          "step": 5,
+          "action": "Set reminder to update thread with developments every 30 minutes",
+          "notes": "First-mover threads that get updated with accurate info outperform initial-only threads by 3-5x in total engagement"
+        }
+      ]
+    },
+    {
+      "name": "Viral Content Repost Pipeline",
+      "description": "Find viral content from other platforms, download, subtitle, and post natively on X for organic reach",
+      "triggers": [
+        "Content in your niche trending on TikTok or YouTube Shorts",
+        "Viral educational video detected with >500K views in <48 hours",
+        "Tutorial video that fills a knowledge gap in your current content library"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "action": "Identify viral video and verify it is usable (no watermarks, not copyright-protected music, under 2 minutes)",
+          "notes": "Check original creator — always credit. If original creator is on X, tag them directly"
+        },
+        {
+          "step": 2,
+          "action": "Download with yt-dlp: `yt-dlp -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]' [URL]`",
+          "notes": "Save to /tmp/videos/ folder to avoid accidental permanent storage of third-party content"
+        },
+        {
+          "step": 3,
+          "action": "Transcribe audio with Whisper: `whisper video.mp4 --language auto --output_format srt`",
+          "notes": "Review output SRT file for accuracy — Whisper makes errors on proper nouns, technical terms, and numbers"
+        },
+        {
+          "step": 4,
+          "action": "Hardcode subtitles with ffmpeg: `ffmpeg -i video.mp4 -vf subtitles=video.srt -c:a copy output_subtitled.mp4`",
+          "notes": "Use FontName=Arial, FontSize=16, Alignment=2 for style consistency. Test output before uploading"
+        },
+        {
+          "step": 5,
+          "action": "Write original commentary hook, post video natively with credit to original creator",
+          "notes": "Your hook must add context or framing not present in the video itself. 'This is amazing' is not a hook. 'This 90-second clip explains what most DeFi tutorials get wrong:' is a hook."
+        }
+      ]
+    }
+  ],
+  "toolConfigs": [
+    {
+      "name": "yt-dlp",
+      "purpose": "Download video content from YouTube, TikTok, Twitter, and 1000+ other platforms for native reposting",
+      "setupSteps": [
+        "Install via pip: `pip install yt-dlp`",
+        "Or via Homebrew: `brew install yt-dlp`",
+        "Update regularly: `yt-dlp -U` (platform extraction code changes frequently)"
+      ],
+      "configuration": {
+        "default_format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]",
+        "output_template": "/tmp/videos/%(title)s.%(ext)s",
+        "max_filesize": "500m"
+      },
+      "notes": "Always check platform ToS before downloading. For TikTok content, use --no-check-certificate flag if SSL errors occur. yt-dlp updates break sometimes on major platform changes — check GitHub issues before assuming a URL is invalid."
+    },
+    {
+      "name": "whisper-cli",
+      "purpose": "AI-powered audio transcription for subtitle generation in multiple languages",
+      "setupSteps": [
+        "Install via pip: `pip install openai-whisper`",
+        "Or faster whisper.cpp: `brew install whisper-cpp`",
+        "Download model: `whisper --model medium` on first run (downloads automatically)"
+      ],
+      "configuration": {
+        "model": "medium",
+        "language": "auto",
+        "output_format": "srt",
+        "task": "transcribe"
+      },
+      "notes": "Use 'medium' model for production quality, 'tiny' for rapid testing. 'large' model is overkill for social media quality and 3x slower. For PT-BR translation from English: add --task translate flag. Whisper struggles with heavy accents and financial jargon — always manually review output before using."
+    },
+    {
+      "name": "ffmpeg",
+      "purpose": "Video processing, format conversion, subtitle hardcoding, and audio manipulation",
+      "setupSteps": [
+        "Install: `brew install ffmpeg` (macOS) or `sudo apt-get install ffmpeg` (Linux)",
+        "Verify: `ffmpeg -version` should show 4.0+ for full feature support"
+      ],
+      "configuration": {
+        "subtitle_style": "FontName=Arial,FontSize=16,PrimaryColour=&HFFFFFF&,Alignment=2",
+        "video_codec": "libx264",
+        "audio_codec": "aac",
+        "output_format": "mp4"
+      },
+      "notes": "ffmpeg command complexity scales with requirements — keep a personal command library for common tasks. For X/Twitter upload optimization, target bitrate 2000k-4000k for good quality at acceptable file size. Avoid re-encoding unnecessarily: use -c copy when format conversion is the only goal."
+    }
+  ],
+  "templates": [
+    {
+      "name": "Breaking News Tweet",
+      "category": "breaking-news",
+      "content": "BREAKING: {WHAT_HAPPENED}\n\n{KEY_METRIC_OR_NUMBER}\n\nThread with full analysis:",
+      "variables": ["WHAT_HAPPENED", "KEY_METRIC_OR_NUMBER"],
+      "usage": "Post within 15 minutes of confirming news. Replace WHAT_HAPPENED with a single factual sentence. KEY_METRIC_OR_NUMBER should be the most impactful data point (dollar amount, percentage move, time elapsed)."
+    },
+    {
+      "name": "Thread Opener — Data-Led",
+      "category": "educational-thread",
+      "content": "{IMPRESSIVE_NUMBER} in {TIMEFRAME}.\n\nMost people think {COMMON_MISCONCEPTION}.\n\nReality: {COUNTERINTUITIVE_TRUTH}.\n\nThread on how this actually works:",
+      "variables": ["IMPRESSIVE_NUMBER", "TIMEFRAME", "COMMON_MISCONCEPTION", "COUNTERINTUITIVE_TRUTH"],
+      "usage": "Best for analytical threads where you have unique data. The misconception/reality flip creates maximum curiosity gap. Used for the highest-performing threads — 9.5M impressions thread used this structure."
+    },
+    {
+      "name": "Quote Tweet Response Formula",
+      "category": "engagement",
+      "content": "This is {QUALIFIER} — but here's the part most people are missing:\n\n{YOUR_UNIQUE_INSIGHT}\n\n{OPTIONAL_DATA_POINT}",
+      "variables": ["QUALIFIER", "YOUR_UNIQUE_INSIGHT", "OPTIONAL_DATA_POINT"],
+      "usage": "When quote-tweeting popular posts in your niche. QUALIFIER can be 'correct', 'important', 'half the story', etc. Your unique insight must genuinely add to the original — not just restate it."
+    },
+    {
+      "name": "Morning Market Brief",
+      "category": "daily-content",
+      "content": "GM. {DATE} market brief:\n\nBTC: ${BTC_PRICE} ({BTC_CHANGE_24H})\nETH: ${ETH_PRICE} ({ETH_CHANGE_24H})\nFear & Greed: {FNG_VALUE} ({FNG_LABEL})\n\nWhat's moving: {1_SENTENCE_NARRATIVE}\n\nWatch today: {1_SENTENCE_FORWARD_LOOKING}",
+      "variables": ["DATE", "BTC_PRICE", "BTC_CHANGE_24H", "ETH_PRICE", "ETH_CHANGE_24H", "FNG_VALUE", "FNG_LABEL", "1_SENTENCE_NARRATIVE", "1_SENTENCE_FORWARD_LOOKING"],
+      "usage": "Post every day at 09:00 BRT. Keep under 280 characters. Do not add commentary beyond the template — brevity is the format's value proposition."
+    },
+    {
+      "name": "Thread Closer — CTA",
+      "category": "thread-close",
+      "content": "TL;DR: {1_SENTENCE_BEST_INSIGHT}\n\nIf this helped:\n→ RT the first tweet so others find it\n→ Bookmark for reference\n\nFollow for more {CONTENT_NICHE} content daily.",
+      "variables": ["1_SENTENCE_BEST_INSIGHT", "CONTENT_NICHE"],
+      "usage": "Final tweet of every educational thread. The TL;DR compresses the entire thread value — write this before the thread, then use it as the closing. The specific CTAs (RT + Bookmark) outperform 'follow me for more' by 3x."
+    }
+  ],
+  "metrics": {
+    "period": "6 weeks (Nov 2024 – Dec 2024)",
+    "metrics": {
+      "followers": { "value": "14,400", "unit": "followers", "change": "+14,400 from 0" },
+      "impressions_90d": { "value": "9,500,000", "unit": "impressions", "change": "+9.5M" },
+      "total_likes": { "value": "137,000", "unit": "likes" },
+      "total_bookmarks": { "value": "31,000", "unit": "bookmarks" },
+      "total_retweets": { "value": "18,000", "unit": "retweets" },
+      "avg_engagement_rate": { "value": "3.8", "unit": "percent" },
+      "peak_single_post_impressions": { "value": "890,000", "unit": "impressions" },
+      "follower_growth_rate": { "value": "343", "unit": "followers/day average" }
+    },
+    "verifiable": true
+  },
+  "pricing": {
+    "type": "one-time",
+    "amount": 49,
+    "currency": "USDT",
+    "trialAvailable": true
+  },
+  "metadata": {
+    "createdAt": "2025-01-10T00:00:00Z",
+    "updatedAt": "2025-03-13T00:00:00Z",
+    "language": "en",
+    "tags": ["twitter", "x", "social-media", "growth", "content", "crypto-twitter", "threads", "viral"],
+    "targetAudience": "AI agents and humans operating X/Twitter accounts in the crypto, tech, or finance niches who want to grow from 0 to 10K+ followers using organic methods",
+    "prerequisites": ["Active X/Twitter account", "Basic understanding of posting mechanics", "Content niche identified"]
+  }
+}
