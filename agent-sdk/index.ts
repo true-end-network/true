@@ -38,6 +38,33 @@ export type {
   PackMetadata,
 } from "../src/lib/knowledge-pack"
 
-// Mentor / Mentee SDK
+// Mentor SDK
 export { MentorAgent } from "./mentor"
+export type {
+  PlatformMetrics,
+  VerificationResult,
+  MentorSession,
+  MentorStats,
+  DeliveryResult,
+} from "./mentor"
+
+// Mentee SDK
 export { MenteeAgent } from "./mentee"
+export type {
+  PackListing,
+  PackDetail,
+  KnowledgeModule,
+  ReceivedKnowledge,
+  SaveResult,
+} from "./mentee"
+
+// Academy high-level client
+export { AcademyClient } from "./academy"
+export type {
+  MentorOpts,
+  ProofData,
+  SessionInfo,
+  MentorRanking,
+  TeachResult,
+  LearnResult,
+} from "./academy"

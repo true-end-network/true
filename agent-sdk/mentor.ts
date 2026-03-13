@@ -1,9 +1,61 @@
+import { readFile } from "fs/promises"
 import { AnonymousAgent } from "./client"
 import type { AgentConfig, Message } from "./types"
 import type { KnowledgePack } from "../src/lib/knowledge-pack"
 import { sanitizeKnowledgePack } from "../src/lib/knowledge-pack"
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
+// ---------------------------------------------------------------------------
+// New types
+// ---------------------------------------------------------------------------
+
+export interface PlatformMetrics {
+  followers?: number
+  views?: number
+  engagement?: number
+  revenue?: number
+  [key: string]: number | undefined
+}
+
+export interface VerificationResult {
+  verified: boolean
+  packId: string
+  method: "screenshot" | "api_verified"
+  timestamp: string
+  message?: string
+}
+
+export interface MentorSession {
+  sessionId: string
+  packId: string
+  menteeId: string
+  roomCode: string
+  status: "pending" | "accepted" | "in_progress" | "completed"
+  createdAt: string
+}
+
+export interface MentorStats {
+  totalSessions: number
+  completedSessions: number
+  averageRating: number
+  totalReviews: number
+  totalRevenue: number
+  currency: string
+  topPack?: string
+}
+
+export interface DeliveryResult {
+  roomCode: string
+  skillsDelivered: number
+  errorsDelivered: number
+  workflowsDelivered: number
+  durationMs: number
+}
+
+// ---------------------------------------------------------------------------
+// Internal state
+// ---------------------------------------------------------------------------
 
 interface RoomDeliveryState {
   pack: KnowledgePack
@@ -27,6 +79,122 @@ export class MentorAgent extends AnonymousAgent {
       },
     })
   }
+
+  // ---------------------------------------------------------------------------
+  // Marketplace / API methods
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Register this agent as a mentor by posting a pack to the marketplace.
+   * Returns the assigned pack ID.
+   */
+  async registerAsMentor(apiUrl: string, pack: KnowledgePack): Promise<string> {
+    const res = await fetch(`${apiUrl}/api/marketplace/packs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pack),
+    })
+    if (!res.ok) {
+      throw new Error(`Failed to register pack: ${res.status} ${await res.text()}`)
+    }
+    const data = await res.json() as { id?: string; packId?: string }
+    const id = data.id ?? data.packId
+    if (!id) throw new Error("Server did not return a pack ID")
+    return id
+  }
+
+  /**
+   * Upload engagement proof (screenshot or API-verified) for a pack.
+   */
+  async uploadEngagementProof(
+    apiUrl: string,
+    packId: string,
+    proof: {
+      platform: "x" | "instagram" | "tiktok" | "youtube"
+      type: "screenshot" | "api_verified"
+      screenshotPath?: string
+      metrics: PlatformMetrics
+    }
+  ): Promise<VerificationResult> {
+    if (proof.type === "screenshot") {
+      // Read file and convert to base64
+      if (!proof.screenshotPath) {
+        throw new Error("screenshotPath is required for screenshot proof type")
+      }
+      const buf = await readFile(proof.screenshotPath)
+      const base64 = buf.toString("base64")
+
+      const res = await fetch(`${apiUrl}/api/marketplace/packs/${packId}/proof`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: proof.platform,
+          type: proof.type,
+          screenshot: base64,
+          metrics: proof.metrics,
+        }),
+      })
+      if (!res.ok) {
+        throw new Error(`Failed to upload proof: ${res.status} ${await res.text()}`)
+      }
+      return res.json() as Promise<VerificationResult>
+    } else {
+      // API-verified: POST to verify endpoint
+      const res = await fetch(`${apiUrl}/api/marketplace/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packId,
+          platform: proof.platform,
+          type: proof.type,
+          metrics: proof.metrics,
+        }),
+      })
+      if (!res.ok) {
+        throw new Error(`Failed to verify proof: ${res.status} ${await res.text()}`)
+      }
+      return res.json() as Promise<VerificationResult>
+    }
+  }
+
+  /**
+   * List all sessions where this mentor is assigned.
+   */
+  async listMySessions(apiUrl: string, mentorId: string): Promise<MentorSession[]> {
+    const res = await fetch(`${apiUrl}/api/marketplace/sessions?mentorId=${encodeURIComponent(mentorId)}`)
+    if (!res.ok) {
+      throw new Error(`Failed to list sessions: ${res.status} ${await res.text()}`)
+    }
+    return res.json() as Promise<MentorSession[]>
+  }
+
+  /**
+   * Accept a pending session request.
+   */
+  async acceptSession(apiUrl: string, sessionId: string): Promise<void> {
+    const res = await fetch(`${apiUrl}/api/marketplace/sessions/${encodeURIComponent(sessionId)}/accept`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+    if (!res.ok) {
+      throw new Error(`Failed to accept session: ${res.status} ${await res.text()}`)
+    }
+  }
+
+  /**
+   * Fetch stats for this mentor (total sessions, rating, revenue, etc.).
+   */
+  async getMyStats(apiUrl: string, mentorId: string): Promise<MentorStats> {
+    const res = await fetch(`${apiUrl}/api/marketplace/mentors/${encodeURIComponent(mentorId)}/stats`)
+    if (!res.ok) {
+      throw new Error(`Failed to fetch stats: ${res.status} ${await res.text()}`)
+    }
+    return res.json() as Promise<MentorStats>
+  }
+
+  // ---------------------------------------------------------------------------
+  // Session / delivery methods
+  // ---------------------------------------------------------------------------
 
   /**
    * Begin a mentor session for a room. Stores the pack and sends an intro message.
@@ -167,30 +335,72 @@ export class MentorAgent extends AnonymousAgent {
 
   /**
    * Deliver all content in sequence (skills → error log → workflows → pack_complete).
-   * There is a 2 s pause between top-level sections.
+   * Supports progress callbacks, configurable pause between modules, and optional
+   * interactive Q&A pauses between sections.
    */
-  async deliverFullPack(roomCode: string): Promise<void> {
+  async deliverFullPack(
+    roomCode: string,
+    opts?: {
+      onProgress?: (stage: string, percent: number) => void
+      pauseBetweenModules?: number  // ms — default 2000
+      interactive?: boolean          // allow Q&A between modules
+    }
+  ): Promise<DeliveryResult> {
     const state = this.requireState(roomCode)
+    const pause = opts?.pauseBetweenModules ?? 2000
+    const onProgress = opts?.onProgress
+    const interactive = opts?.interactive ?? false
+    const startTime = Date.now()
+
+    const total =
+      state.sanitized.skills.length +
+      (state.sanitized.errorLog.length > 0 ? 1 : 0) +
+      (state.sanitized.workflows.length > 0 ? 1 : 0)
+    let done = 0
+
+    const tick = (stage: string) => {
+      onProgress?.(stage, total > 0 ? Math.round((done / total) * 100) : 100)
+    }
 
     // Skills
     for (let i = 0; i < state.sanitized.skills.length; i++) {
+      tick(`skill:${i + 1}/${state.sanitized.skills.length}`)
       await this.deliverSkill(roomCode, i)
-      if (i < state.sanitized.skills.length - 1) await sleep(2000)
+      done++
+      if (i < state.sanitized.skills.length - 1) await sleep(pause)
     }
 
-    if (state.sanitized.skills.length > 0) await sleep(2000)
+    if (state.sanitized.skills.length > 0) {
+      if (interactive) {
+        await this.sendMessage(roomCode, "💬 Skills delivered. Any questions before we continue?", "system")
+        await sleep(pause * 2)
+      } else {
+        await sleep(pause)
+      }
+    }
 
     // Error log
     if (state.sanitized.errorLog.length > 0) {
+      tick("error_log")
       await this.deliverErrorLog(roomCode)
-      await sleep(2000)
+      done++
+      if (interactive) {
+        await this.sendMessage(roomCode, "💬 Error log delivered. Any questions?", "system")
+        await sleep(pause * 2)
+      } else {
+        await sleep(pause)
+      }
     }
 
     // Workflows
     if (state.sanitized.workflows.length > 0) {
+      tick("workflows")
       await this.deliverWorkflows(roomCode)
-      await sleep(1000)
+      done++
+      await sleep(Math.min(pause, 1000))
     }
+
+    onProgress?.("complete", 100)
 
     // Final message — carries the full sanitized pack so the mentee can reconstruct it
     await this.send(roomCode, {
@@ -203,6 +413,14 @@ export class MentorAgent extends AnonymousAgent {
         pack: state.sanitized,
       },
     })
+
+    return {
+      roomCode,
+      skillsDelivered: state.sanitized.skills.length,
+      errorsDelivered: state.sanitized.errorLog.length,
+      workflowsDelivered: state.sanitized.workflows.length,
+      durationMs: Date.now() - startTime,
+    }
   }
 
   /**
