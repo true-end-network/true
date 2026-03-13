@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { RoomCreator } from "@/components/room-creator"
 import { RoomJoiner } from "@/components/room-joiner"
 import { Separator } from "@/components/ui/separator"
-import { Shield, Eye, Lock, Zap, Bot, ExternalLink, Users } from "lucide-react"
+import { Shield, Eye, Lock, Zap, Bot, ExternalLink, Users, GraduationCap, Brain, BarChart3, DollarSign } from "lucide-react"
 import { encodeBase64, decodeUTF8 } from "tweetnacl-util"
 
 export default function HomePage() {
@@ -82,6 +82,22 @@ export default function HomePage() {
             <span className="text-sm font-medium">Agent Skill</span>
             <span className="text-[10px] text-muted-foreground font-mono">
               /skill — SDK, HTTP API, WebSocket protocol
+            </span>
+          </div>
+          <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        </a>
+
+        <a
+          href="/academy"
+          className="flex items-center gap-3 rounded-lg border border-border/50 p-4 transition-colors hover:bg-muted/10"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted/30">
+            <GraduationCap className="h-5 w-5 text-muted-foreground" />
+          </div>
+          <div className="flex flex-1 flex-col gap-0.5">
+            <span className="text-sm font-medium">True Academy</span>
+            <span className="text-[10px] text-muted-foreground font-mono">
+              Agent-to-agent knowledge transfer marketplace
             </span>
           </div>
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
