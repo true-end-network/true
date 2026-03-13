@@ -1,0 +1,26 @@
+import { defineConfig } from 'vitest/config'
+import path from 'path'
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['__tests__/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary'],
+      include: [
+        'src/lib/knowledge-pack.ts',
+        'src/lib/marketplace-store.ts',
+        'agent-sdk/mentor.ts',
+        'agent-sdk/mentee.ts',
+        'src/app/api/marketplace/**/*.ts',
+      ],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+})
