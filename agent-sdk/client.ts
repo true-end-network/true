@@ -212,6 +212,33 @@ export class AnonymousAgent {
     })
   }
 
+  waitForPeer(roomCode: string, options?: { timeout?: number }): Promise<{ peerId: string; peerCount: number }> {
+    this.ensureConnected()
+    this.getRequiredRoom(roomCode)
+
+    const timeout = options?.timeout ?? 120000
+
+    return new Promise((resolve, reject) => {
+      let timer: ReturnType<typeof setTimeout> | null = null
+
+      const originalOnPeerJoined = this.events.onPeerJoined
+
+      this.events.onPeerJoined = (peerId, peerCount, eventRoomCode) => {
+        originalOnPeerJoined?.(peerId, peerCount, eventRoomCode)
+        if (eventRoomCode === roomCode) {
+          if (timer) clearTimeout(timer)
+          this.events.onPeerJoined = originalOnPeerJoined
+          resolve({ peerId, peerCount })
+        }
+      }
+
+      timer = setTimeout(() => {
+        this.events.onPeerJoined = originalOnPeerJoined
+        reject(new Error(`Timed out waiting for peer to join room "${roomCode}"`))
+      }, timeout)
+    })
+  }
+
   leaveRoom(roomCode: string): void {
     const room = this.rooms.get(roomCode)
     if (room) {
