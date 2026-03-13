@@ -45,6 +45,7 @@ export interface RoomCreatedResponse {
   roomHash: string
   peerId: string
   deleteToken: string
+  expiresAt: number
 }
 
 export interface RoomJoinedResponse {
@@ -52,6 +53,8 @@ export interface RoomJoinedResponse {
   roomHash: string
   peerId: string
   peerCount: number
+  expiresAt: number
+  locked: boolean
 }
 
 export interface PeerEvent {

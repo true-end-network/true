@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import type { Message, MessagePayload, ServerEvent, RoomJoinedResponse, TtlUpdatedEvent } from "@/lib/protocol"
+import type { Message, MessagePayload, ServerEvent, RoomCreatedResponse, RoomJoinedResponse, TtlUpdatedEvent } from "@/lib/protocol"
 import {
   deriveRoomKey,
   deriveRoomHash,
@@ -126,12 +126,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         const state = get()
 
         switch (data.event) {
-          case "room_created":
-            set({ peerCount: 1, deleteToken: (data as { deleteToken: string }).deleteToken })
+          case "room_created": {
+            const created = data as RoomCreatedResponse
+            set({ peerCount: 1, deleteToken: created.deleteToken, roomExpiresAt: created.expiresAt })
             break
-          case "room_joined":
-            set({ peerCount: (data as RoomJoinedResponse).peerCount })
+          }
+          case "room_joined": {
+            const joined = data as RoomJoinedResponse
+            set({ peerCount: joined.peerCount, roomExpiresAt: joined.expiresAt, roomLocked: joined.locked })
             break
+          }
           case "message": {
             const msg = data as MessagePayload
             if (state.roomKey) {

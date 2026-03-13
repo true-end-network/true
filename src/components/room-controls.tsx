@@ -1,13 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useChatStore } from "@/stores/chat-store"
 import { Lock, Unlock, Skull, Clock, UserMinus, ChevronDown, ChevronUp } from "lucide-react"
 
+function formatTimeLeft(ms: number): string {
+  if (ms <= 0) return "Expired"
+  const totalSec = Math.floor(ms / 1000)
+  const h = Math.floor(totalSec / 3600)
+  const m = Math.floor((totalSec % 3600) / 60)
+  const s = totalSec % 60
+  if (h > 0) return `${h}h ${m}m ${s}s`
+  if (m > 0) return `${m}m ${s}s`
+  return `${s}s`
+}
+
+function Countdown({ expiresAt }: { expiresAt: number }) {
+  const [timeLeft, setTimeLeft] = useState(expiresAt - Date.now())
+
+  useEffect(() => {
+    setTimeLeft(expiresAt - Date.now())
+    const interval = setInterval(() => {
+      setTimeLeft(expiresAt - Date.now())
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [expiresAt])
+
+  const isLow = timeLeft > 0 && timeLeft < 300000 // < 5 min
+
+  return (
+    <span className={`font-mono text-sm tabular-nums ${isLow ? "text-destructive" : "text-foreground"}`}>
+      {formatTimeLeft(timeLeft)}
+    </span>
+  )
+}
+
 export function RoomControls() {
   const deleteToken = useChatStore((s) => s.deleteToken)
   const roomLocked = useChatStore((s) => s.roomLocked)
+  const roomExpiresAt = useChatStore((s) => s.roomExpiresAt)
   const peers = useChatStore((s) => s.peers)
   const lockRoom = useChatStore((s) => s.lockRoom)
   const unlockRoom = useChatStore((s) => s.unlockRoom)
@@ -27,7 +59,15 @@ export function RoomControls() {
       >
         <Lock className="h-3 w-3" />
         <span className="font-mono uppercase tracking-wider">Room Controls</span>
-        {expanded ? <ChevronUp className="ml-auto h-3 w-3" /> : <ChevronDown className="ml-auto h-3 w-3" />}
+        <div className="ml-auto flex items-center gap-3">
+          {roomExpiresAt && (
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3 w-3" />
+              <Countdown expiresAt={roomExpiresAt} />
+            </div>
+          )}
+          {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </div>
       </button>
 
       {expanded && (
@@ -52,9 +92,14 @@ export function RoomControls() {
 
           {/* TTL Controls */}
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span className="font-mono uppercase tracking-wider">Time to Live</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <Clock className="h-3 w-3" />
+                <span className="font-mono uppercase tracking-wider">Time to Live</span>
+              </div>
+              {roomExpiresAt && (
+                <Countdown expiresAt={roomExpiresAt} />
+              )}
             </div>
             <div className="flex gap-1.5">
               {[

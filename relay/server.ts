@@ -221,7 +221,7 @@ function handleCreateRoom(ws: WebSocket, data: { ttl: number; roomHash: string }
   rooms.set(roomHash, room)
   trackWsRoom(ws, roomHash)
 
-  send(ws, { event: "room_created", roomHash, peerId, deleteToken })
+  send(ws, { event: "room_created", roomHash, peerId, deleteToken, expiresAt: room.createdAt + room.ttl })
 }
 
 function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
@@ -258,6 +258,8 @@ function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
     roomHash,
     peerId,
     peerCount: totalPeerCount(room),
+    expiresAt: room.createdAt + room.ttl,
+    locked: room.locked,
   })
 
   broadcast(
