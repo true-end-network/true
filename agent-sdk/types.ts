@@ -1,3 +1,4 @@
+import type { Envelope, Message } from "../src/lib/protocol"
 export type { Envelope, Message, ServerEvent, ClientEvent } from "../src/lib/protocol"
 
 export interface RoomInfo {
