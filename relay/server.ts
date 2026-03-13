@@ -48,6 +48,7 @@ interface Room {
   createdAt: number
   ttl: number
   locked: boolean
+  autoLockAt: number
 }
 
 interface RateWindow {
@@ -215,13 +216,14 @@ function handleCreateRoom(ws: WebSocket, data: { ttl: number; roomHash: string }
     createdAt: Date.now(),
     ttl: clampedTtl * 1000,
     locked: false,
+    autoLockAt: 0,
   }
 
   room.peers.set(peerId, { ws, id: peerId, alive: true })
   rooms.set(roomHash, room)
   trackWsRoom(ws, roomHash)
 
-  send(ws, { event: "room_created", roomHash, peerId, deleteToken, expiresAt: room.createdAt + room.ttl })
+  send(ws, { event: "room_created", roomHash, peerId, deleteToken, expiresAt: room.createdAt + room.ttl, autoLockAt: room.autoLockAt })
 }
 
 function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
@@ -260,6 +262,7 @@ function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
     peerCount: totalPeerCount(room),
     expiresAt: room.createdAt + room.ttl,
     locked: room.locked,
+    autoLockAt: room.autoLockAt,
   })
 
   broadcast(
@@ -272,6 +275,8 @@ function handleJoinRoom(ws: WebSocket, data: { roomHash: string }, ip: string) {
     },
     peerId
   )
+
+  checkAutoLock(room)
 }
 
 function handleLeaveRoom(ws: WebSocket, data: { roomHash: string }) {
@@ -451,6 +456,36 @@ function handleKickPeer(ws: WebSocket, data: { roomHash: string; deleteToken: st
     peerId,
     peerCount: totalPeerCount(room),
   })
+}
+
+function handleSetAutoLock(ws: WebSocket, data: { roomHash: string; deleteToken: string; peerCount: number }) {
+  const { roomHash, deleteToken, peerCount } = data
+  const room = rooms.get(roomHash)
+
+  if (!room) {
+    send(ws, { event: "error", message: "Operation failed", code: "ROOM_ERROR" })
+    return
+  }
+  if (!deleteToken || room.deleteToken !== deleteToken) {
+    send(ws, { event: "error", message: "Invalid delete token", code: "INVALID_DELETE_TOKEN" })
+    return
+  }
+
+  room.autoLockAt = Math.max(0, peerCount)
+  broadcast(room, { event: "auto_lock_set", roomHash, peerCount: room.autoLockAt })
+
+  // Check if we should auto-lock now
+  if (room.autoLockAt > 0 && totalPeerCount(room) >= room.autoLockAt && !room.locked) {
+    room.locked = true
+    broadcast(room, { event: "room_locked", roomHash })
+  }
+}
+
+function checkAutoLock(room: Room) {
+  if (room.autoLockAt > 0 && totalPeerCount(room) >= room.autoLockAt && !room.locked) {
+    room.locked = true
+    broadcast(room, { event: "room_locked", roomHash: room.hash })
+  }
 }
 
 function cleanupExpiredRooms() {
@@ -636,6 +671,7 @@ async function handleHttpCreateRoom(req: IncomingMessage, res: ServerResponse, i
       createdAt: Date.now(),
       ttl: clampedTtl * 1000,
       locked: false,
+    autoLockAt: 0,
     }
 
     rooms.set(roomHash, room)
@@ -679,6 +715,8 @@ function handleHttpJoinRoom(res: ServerResponse, roomHash: string, ip: string) {
     peerId,
     peerCount: totalPeerCount(room),
   })
+
+  checkAutoLock(room)
 
   jsonResponse(res, 200, { roomHash, peerId, peerCount: totalPeerCount(room) })
 }
@@ -864,6 +902,9 @@ wss.on("connection", (ws: WebSocket, req: IncomingMessage) => {
           break
         case "kick_peer":
           handleKickPeer(ws, data as { roomHash: string; deleteToken: string; peerId: string })
+          break
+        case "set_auto_lock":
+          handleSetAutoLock(ws, data as { roomHash: string; deleteToken: string; peerCount: number })
           break
         case "ping":
           send(ws, { event: "pong" })

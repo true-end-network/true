@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useChatStore } from "@/stores/chat-store"
-import { Lock, Unlock, Skull, Clock, UserMinus, ChevronDown, ChevronUp } from "lucide-react"
+import { Lock, Unlock, Skull, Clock, UserMinus, ChevronDown, ChevronUp, ShieldCheck } from "lucide-react"
 
 function formatTimeLeft(ms: number): string {
   if (ms <= 0) return "Expired"
@@ -46,6 +46,8 @@ export function RoomControls() {
   const updateTtl = useChatStore((s) => s.updateTtl)
   const kickPeer = useChatStore((s) => s.kickPeer)
   const killRoom = useChatStore((s) => s.killRoom)
+  const autoLockAt = useChatStore((s) => s.autoLockAt)
+  const setAutoLock = useChatStore((s) => s.setAutoLock)
   const [expanded, setExpanded] = useState(false)
   const [confirmKill, setConfirmKill] = useState(false)
 
@@ -118,6 +120,38 @@ export function RoomControls() {
                   {opt.label}
                 </Button>
               ))}
+            </div>
+          </div>
+
+          {/* Auto-Lock */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <ShieldCheck className="h-3 w-3" />
+              <span className="font-mono uppercase tracking-wider">Auto-Lock</span>
+              {autoLockAt > 0 && (
+                <span className="ml-1 text-amber-500">at {autoLockAt} peers</span>
+              )}
+            </div>
+            <div className="flex gap-1.5">
+              {[2, 3, 4, 5].map((n) => (
+                <Button
+                  key={n}
+                  variant={autoLockAt === n ? "default" : "outline"}
+                  size="sm"
+                  className="text-[10px] flex-1 h-7"
+                  onClick={() => setAutoLock(n)}
+                >
+                  {n} peers
+                </Button>
+              ))}
+              <Button
+                variant={autoLockAt === 0 ? "default" : "outline"}
+                size="sm"
+                className="text-[10px] flex-1 h-7"
+                onClick={() => setAutoLock(0)}
+              >
+                Off
+              </Button>
             </div>
           </div>
 

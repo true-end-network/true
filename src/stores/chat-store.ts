@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import type { Message, MessagePayload, ServerEvent, RoomCreatedResponse, RoomJoinedResponse, TtlUpdatedEvent } from "@/lib/protocol"
+import type { Message, MessagePayload, ServerEvent, RoomCreatedResponse, RoomJoinedResponse, TtlUpdatedEvent, AutoLockSetEvent } from "@/lib/protocol"
 import {
   deriveRoomKey,
   deriveRoomHash,
@@ -43,6 +43,7 @@ interface ChatStore {
   deleteToken: string | null
   roomLocked: boolean
   roomExpiresAt: number | null
+  autoLockAt: number
   peers: string[]
   kicked: boolean
 
@@ -54,6 +55,7 @@ interface ChatStore {
   updateTtl: (newTtlSeconds: number) => void
   kickPeer: (peerId: string) => void
   killRoom: () => void
+  setAutoLock: (peerCount: number) => void
 }
 
 let ws: WebSocket | null = null
@@ -85,6 +87,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   deleteToken: null,
   roomLocked: false,
   roomExpiresAt: null,
+  autoLockAt: 0,
   peers: [],
   kicked: false,
 
@@ -128,12 +131,12 @@ export const useChatStore = create<ChatStore>((set, get) => ({
         switch (data.event) {
           case "room_created": {
             const created = data as RoomCreatedResponse
-            set({ peerCount: 1, deleteToken: created.deleteToken, roomExpiresAt: created.expiresAt })
+            set({ peerCount: 1, deleteToken: created.deleteToken, roomExpiresAt: created.expiresAt, autoLockAt: created.autoLockAt })
             break
           }
           case "room_joined": {
             const joined = data as RoomJoinedResponse
-            set({ peerCount: joined.peerCount, roomExpiresAt: joined.expiresAt, roomLocked: joined.locked })
+            set({ peerCount: joined.peerCount, roomExpiresAt: joined.expiresAt, roomLocked: joined.locked, autoLockAt: joined.autoLockAt })
             break
           }
           case "message": {
@@ -182,6 +185,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
           case "ttl_updated": {
             const ttlData = data as TtlUpdatedEvent
             set({ roomExpiresAt: ttlData.expiresAt })
+            break
+          }
+          case "auto_lock_set": {
+            const autoData = data as AutoLockSetEvent
+            set({ autoLockAt: autoData.peerCount })
             break
           }
           case "peer_kicked":
@@ -272,6 +280,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       deleteToken: null,
       roomLocked: false,
       roomExpiresAt: null,
+      autoLockAt: 0,
       peers: [],
       kicked: false,
     })
@@ -311,6 +320,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     const state = get()
     if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
       ws.send(JSON.stringify({ event: "delete_room", roomHash: state.roomHash, deleteToken: state.deleteToken }))
+    }
+  },
+
+  setAutoLock: (peerCount: number) => {
+    const state = get()
+    if (ws?.readyState === WebSocket.OPEN && state.roomHash && state.deleteToken) {
+      ws.send(JSON.stringify({ event: "set_auto_lock", roomHash: state.roomHash, deleteToken: state.deleteToken, peerCount }))
     }
   },
 }))

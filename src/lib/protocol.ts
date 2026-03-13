@@ -46,6 +46,7 @@ export interface RoomCreatedResponse {
   peerId: string
   deleteToken: string
   expiresAt: number
+  autoLockAt: number
 }
 
 export interface RoomJoinedResponse {
@@ -55,6 +56,7 @@ export interface RoomJoinedResponse {
   peerCount: number
   expiresAt: number
   locked: boolean
+  autoLockAt: number
 }
 
 export interface PeerEvent {
@@ -136,6 +138,19 @@ export interface PeerKickedEvent {
   peerCount: number
 }
 
+export interface SetAutoLockPayload {
+  event: "set_auto_lock"
+  roomHash: string
+  deleteToken: string
+  peerCount: number
+}
+
+export interface AutoLockSetEvent {
+  event: "auto_lock_set"
+  roomHash: string
+  peerCount: number
+}
+
 export type ServerEvent =
   | RoomCreatedResponse
   | RoomJoinedResponse
@@ -146,6 +161,7 @@ export type ServerEvent =
   | RoomUnlockedEvent
   | TtlUpdatedEvent
   | PeerKickedEvent
+  | AutoLockSetEvent
   | ErrorResponse
   | MessagePayload
   | PongResponse
@@ -159,5 +175,6 @@ export type ClientEvent =
   | UnlockRoomPayload
   | UpdateTtlPayload
   | KickPeerPayload
+  | SetAutoLockPayload
   | MessagePayload
   | { event: "ping" }

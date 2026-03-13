@@ -1,15 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useContactStore, type Contact } from "@/stores/contact-store"
 import { encodeBase64, decodeUTF8 } from "tweetnacl-util"
-import { MessageSquare, Pencil, Trash2, Check, X, Users } from "lucide-react"
+import { usePresence } from "@/hooks/use-presence"
+import { MessageSquare, Pencil, Trash2, Check, X, Users, Tag } from "lucide-react"
 
-function ContactCard({ contact }: { contact: Contact }) {
+function ContactCard({ contact, isOnline }: { contact: Contact; isOnline?: boolean }) {
   const router = useRouter()
   const deriveNextRoom = useContactStore((s) => s.deriveNextRoom)
   const renameContact = useContactStore((s) => s.renameContact)
@@ -17,12 +18,17 @@ function ContactCard({ contact }: { contact: Contact }) {
   const [editing, setEditing] = useState(false)
   const [editName, setEditName] = useState(contact.name)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showTopicInput, setShowTopicInput] = useState(false)
+  const [topic, setTopic] = useState("")
 
   function handleChat() {
     const result = deriveNextRoom(contact.id)
     if (result) {
       const encoded = encodeBase64(decodeUTF8(result.roomCode))
-      router.push(`/room/observe#${encoded}`)
+      const topicParam = topic.trim() ? `?topic=${encodeURIComponent(topic.trim())}` : ""
+      router.push(`/room/observe${topicParam}#${encoded}`)
+      setShowTopicInput(false)
+      setTopic("")
     }
   }
 
@@ -42,8 +48,11 @@ function ContactCard({ contact }: { contact: Contact }) {
   return (
     <Card className="border-border/50">
       <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+        <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
           <Users className="h-4 w-4 text-primary" />
+          {isOnline && (
+            <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-background" />
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
@@ -77,6 +86,9 @@ function ContactCard({ contact }: { contact: Contact }) {
               <MessageSquare className="h-3 w-3" />
               Chat
             </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowTopicInput(!showTopicInput)} title="Set topic">
+              <Tag className="h-3 w-3" />
+            </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { setEditName(contact.name); setEditing(true) }}>
               <Pencil className="h-3 w-3" />
             </Button>
@@ -97,12 +109,38 @@ function ContactCard({ contact }: { contact: Contact }) {
           </div>
         )}
       </CardContent>
+      {showTopicInput && (
+        <div className="border-t border-border/50 px-4 py-3 space-y-2">
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+            <Tag className="h-3 w-3" />
+            <span className="font-mono uppercase tracking-wider">Room Topic (optional)</span>
+          </div>
+          <div className="flex gap-2">
+            <Input
+              placeholder="e.g. Contract negotiation, API design..."
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="h-8 text-xs"
+              autoFocus
+              onKeyDown={(e) => e.key === "Enter" && handleChat()}
+            />
+            <Button size="sm" className="h-8 text-xs shrink-0" onClick={handleChat}>
+              Go
+            </Button>
+          </div>
+        </div>
+      )}
     </Card>
   )
 }
 
 export function ContactList() {
   const contacts = useContactStore((s) => s.contacts)
+  const presenceContacts = useMemo(
+    () => contacts.map((c) => ({ id: c.id, sharedSecret: c.sharedSecret })),
+    [contacts]
+  )
+  const online = usePresence(presenceContacts)
 
   if (contacts.length === 0) {
     return (
@@ -117,7 +155,7 @@ export function ContactList() {
   return (
     <div className="space-y-2">
       {contacts.map((contact) => (
-        <ContactCard key={contact.id} contact={contact} />
+        <ContactCard key={contact.id} contact={contact} isOnline={online[contact.id]} />
       ))}
     </div>
   )

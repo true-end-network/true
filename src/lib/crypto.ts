@@ -190,3 +190,55 @@ export function decodePairingFragment(fragment: string): string | null {
 export function getTodayUTC(): string {
   return new Date().toISOString().slice(0, 10)
 }
+
+export function deriveGroupRoomCode(sharedSecrets: string[], date: string, sequence: number): string {
+  const sorted = [...sharedSecrets].sort()
+  const combined = sorted.join(":")
+  const keyBytes = decodeUTF8(combined)
+  const message = decodeUTF8(`true:group:${date}:${sequence}`)
+  const hash = hmacSha512(keyBytes, message)
+
+  const result: string[] = []
+  let idx = 0
+  while (result.length < ROOM_CODE_LENGTH) {
+    const b = hash[idx % hash.length]
+    idx++
+    if (b < REJECTION_THRESHOLD) {
+      result.push(ROOM_CODE_ALPHABET[b % ALPHABET_LEN])
+    }
+    if (idx > hash.length * 4) {
+      const extra = hmacSha512(keyBytes, decodeUTF8(`true:group:${date}:${sequence}:${idx}`))
+      for (const eb of extra) {
+        if (eb < REJECTION_THRESHOLD && result.length < ROOM_CODE_LENGTH) {
+          result.push(ROOM_CODE_ALPHABET[eb % ALPHABET_LEN])
+        }
+      }
+    }
+  }
+  return result.join("")
+}
+
+export function deriveScheduledRoomCode(sharedSecret: string, date: string, hour: number): string {
+  const keyBytes = decodeBase64(sharedSecret)
+  const message = decodeUTF8(`true:schedule:${date}:${hour}`)
+  const hash = hmacSha512(keyBytes, message)
+
+  const result: string[] = []
+  let idx = 0
+  while (result.length < ROOM_CODE_LENGTH) {
+    const b = hash[idx % hash.length]
+    idx++
+    if (b < REJECTION_THRESHOLD) {
+      result.push(ROOM_CODE_ALPHABET[b % ALPHABET_LEN])
+    }
+    if (idx > hash.length * 4) {
+      const extra = hmacSha512(keyBytes, decodeUTF8(`true:schedule:${date}:${hour}:${idx}`))
+      for (const eb of extra) {
+        if (eb < REJECTION_THRESHOLD && result.length < ROOM_CODE_LENGTH) {
+          result.push(ROOM_CODE_ALPHABET[eb % ALPHABET_LEN])
+        }
+      }
+    }
+  }
+  return result.join("")
+}

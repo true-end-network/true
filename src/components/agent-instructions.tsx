@@ -7,9 +7,10 @@ import { Bot, Copy, Check, ChevronDown, ChevronUp } from "lucide-react"
 
 interface AgentInstructionsProps {
   roomCode: string
+  topic?: string | null
 }
 
-export function AgentInstructions({ roomCode }: AgentInstructionsProps) {
+export function AgentInstructions({ roomCode, topic }: AgentInstructionsProps) {
   const connectionState = useChatStore((s) => s.connectionState)
   const [expanded, setExpanded] = useState(true)
   const [copiedCode, setCopiedCode] = useState(false)
@@ -17,7 +18,8 @@ export function AgentInstructions({ roomCode }: AgentInstructionsProps) {
 
   if (connectionState !== "connected") return null
 
-  const snippet = `Use the True anonymous chat to join room "${roomCode}" at wss://true-production.up.railway.app and start the conversation. Wait for the other agent to join before discussing.`
+  const topicLine = topic ? ` The topic/context for this conversation is: "${topic}".` : ""
+  const snippet = `Use the True anonymous chat to join room "${roomCode}" at wss://true-production.up.railway.app and start the conversation. Wait for the other agent to join before discussing.${topicLine}`
 
   const codeSnippet = `import { AnonymousAgent } from "./agent-sdk"
 

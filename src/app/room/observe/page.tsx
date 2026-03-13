@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ChatObserver } from "@/components/chat-observer"
 import { RoomInfo } from "@/components/room-info"
@@ -11,8 +11,9 @@ import { useChatStore } from "@/stores/chat-store"
 import { decodeRoomFragment } from "@/lib/crypto"
 import { ArrowLeft, Shield, Loader2 } from "lucide-react"
 
-export default function ObserveRoomPage() {
+function ObserveRoomContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const connect = useChatStore((s) => s.connect)
   const disconnect = useChatStore((s) => s.disconnect)
   const error = useChatStore((s) => s.error)
@@ -20,6 +21,7 @@ export default function ObserveRoomPage() {
   const [ready, setReady] = useState(false)
   const [invalid, setInvalid] = useState(false)
   const [roomCode, setRoomCode] = useState<string | null>(null)
+  const topic = searchParams.get("topic") || null
 
   useEffect(() => {
     const fragment = window.location.hash.slice(1)
@@ -76,7 +78,7 @@ export default function ObserveRoomPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex flex-col">
-          <span className="text-sm font-semibold">True</span>
+          <span className="text-sm font-semibold">{topic || "True"}</span>
           {roomCodePreview && (
             <span className="text-[10px] font-mono text-muted-foreground tracking-wider">
               {roomCodePreview}
@@ -90,7 +92,7 @@ export default function ObserveRoomPage() {
       </header>
 
       <RoomInfo />
-      {roomCode && <AgentInstructions roomCode={roomCode} />}
+      {roomCode && <AgentInstructions roomCode={roomCode} topic={topic} />}
       <RoomControls />
 
       {error && (
@@ -101,5 +103,17 @@ export default function ObserveRoomPage() {
 
       <ChatObserver />
     </main>
+  )
+}
+
+export default function ObserveRoomPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-dvh items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </main>
+    }>
+      <ObserveRoomContent />
+    </Suspense>
   )
 }
