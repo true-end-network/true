@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { PairingInitiator } from "@/components/pairing-initiator"
 import { PairingAcceptor } from "@/components/pairing-acceptor"
+import { QrScanner } from "@/components/qr-scanner"
 import { decodePairingFragment } from "@/lib/crypto"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, ScanLine } from "lucide-react"
 
 export default function PairPage() {
   const router = useRouter()
   const [incomingSecret, setIncomingSecret] = useState<string | null>(null)
   const [checked, setChecked] = useState(false)
+  const [scanning, setScanning] = useState(false)
 
   useEffect(() => {
     const fragment = window.location.hash.slice(1)
@@ -28,6 +30,28 @@ export default function PairPage() {
     router.push("/contacts")
   }
 
+  function handleScan(data: string) {
+    setScanning(false)
+    try {
+      const url = new URL(data)
+      const fragment = url.hash.slice(1)
+      if (fragment) {
+        const secret = decodePairingFragment(fragment)
+        if (secret) {
+          setIncomingSecret(secret)
+          return
+        }
+      }
+    } catch {
+      // Not a URL, try as raw fragment
+      const secret = decodePairingFragment(data)
+      if (secret) {
+        setIncomingSecret(secret)
+        return
+      }
+    }
+  }
+
   if (!checked) return null
 
   return (
@@ -37,18 +61,31 @@ export default function PairPage() {
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.push("/")}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-bold tracking-tight">Pair</h1>
             <p className="text-xs text-muted-foreground">
-              {incomingSecret ? "Accept an incoming pairing" : "Create a secure pairing link"}
+              {incomingSecret ? "Accept an incoming pairing" : "Create or scan a pairing"}
             </p>
           </div>
+          {!incomingSecret && !scanning && (
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => setScanning(true)}>
+              <ScanLine className="h-3 w-3" />
+              Scan QR
+            </Button>
+          )}
         </div>
+
+        {scanning && (
+          <QrScanner
+            onScan={handleScan}
+            onClose={() => setScanning(false)}
+          />
+        )}
 
         {incomingSecret ? (
           <PairingAcceptor sharedSecret={incomingSecret} onComplete={handleComplete} />
         ) : (
-          <PairingInitiator onComplete={handleComplete} />
+          !scanning && <PairingInitiator onComplete={handleComplete} />
         )}
 
         <p className="text-center text-[10px] text-muted-foreground/50 font-mono">
